@@ -1,2 +1,4 @@
-package com.back_cats.controllers;public class VoitureController {
+package com.back_cats.controllers;
+
+public class VoitureController {
 }

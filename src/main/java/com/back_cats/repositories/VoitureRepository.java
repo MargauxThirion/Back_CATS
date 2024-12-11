@@ -1,2 +1,4 @@
-package com.back_cats.repositories;public class VoitureRepository {
+package com.back_cats.repositories;
+
+public class VoitureRepository {
 }

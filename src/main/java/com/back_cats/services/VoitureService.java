@@ -1,2 +1,4 @@
-package com.back_cats.services;public class VoitureService {
+package com.back_cats.services;
+
+public class VoitureService {
 }
