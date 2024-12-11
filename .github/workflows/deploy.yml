@@ -50,4 +50,5 @@ jobs:
       # 6. Mettre à jour ECS
       - name: Update ECS Service
         run: |
-          ecs-cli compose --file docker-compose.yml --project-name cats-back service up
+          ecs-cli compose --file docker-compose.yml --project-name cats-back --cluster BackCatsCluster service up
+
