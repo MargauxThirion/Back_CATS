@@ -1,3 +1,4 @@
+version: '3.7'
 services:
       app:
         image: 084828604086.dkr.ecr.eu-north-1.amazonaws.com/cats/back:latest
