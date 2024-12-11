@@ -30,9 +30,11 @@ jobs:
           chmod +x ecs-cli
           sudo mv ecs-cli /usr/local/bin/
 
-      # Vérification de l'installation
-      - name: Verify ecs-cli installation
-        run: ecs-cli --version  # Vérifie que ecs-cli est bien installé
+      # Vérification du téléchargement et de l'exécution de ecs-cli
+      - name: Check ecs-cli file
+        run: |
+          file /usr/local/bin/ecs-cli
+          ecs-cli --version  # Vérifie que ecs-cli est bien installé
 
       # 4. Construire l'image Docker
       - name: Build Docker image
