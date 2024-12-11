@@ -25,9 +25,14 @@ jobs:
       # 3. Installer ecs-cli
       - name: Install ecs-cli
         run: |
+          # Télécharger ecs-cli à partir de la source officielle
           curl -Lo ecs-cli https://github.com/aws/amazon-ecs-cli/releases/download/v1.21.0/ecs-cli-linux-amd64
           chmod +x ecs-cli
           sudo mv ecs-cli /usr/local/bin/
+
+      # Vérification de l'installation
+      - name: Verify ecs-cli installation
+        run: ecs-cli --version  # Vérifie que ecs-cli est bien installé
 
       # 4. Construire l'image Docker
       - name: Build Docker image
