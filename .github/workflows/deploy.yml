@@ -22,18 +22,18 @@ jobs:
           aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
           aws-region: eu-north-1  # Remplacez avec votre région AWS
 
-      # 3. Installer ecs-cli
+      # 3. Télécharger et installer ecs-cli depuis l'archive
       - name: Install ecs-cli
         run: |
-          # Télécharger ecs-cli à partir de la source officielle
-          curl -Lo ecs-cli https://github.com/aws/amazon-ecs-cli/releases/download/v1.21.0/ecs-cli-linux-amd64
-          chmod +x ecs-cli
-          sudo mv ecs-cli /usr/local/bin/
+          # Télécharger et extraire ecs-cli
+          curl -Lo ecs-cli.tar.gz https://github.com/aws/amazon-ecs-cli/releases/download/v1.21.0/ecs-cli-linux-amd64.tar.gz
+          tar -xzvf ecs-cli.tar.gz
+          sudo mv ecs-cli-linux-amd64 /usr/local/bin/ecs-cli
+          sudo chmod +x /usr/local/bin/ecs-cli
 
-      # Vérification du téléchargement et de l'exécution de ecs-cli
-      - name: Check ecs-cli file
+      # Vérification de l'installation de ecs-cli
+      - name: Verify ecs-cli installation
         run: |
-          file /usr/local/bin/ecs-cli
           ecs-cli --version  # Vérifie que ecs-cli est bien installé
 
       # 4. Construire l'image Docker
