@@ -3,11 +3,11 @@ name: Deploy to AWS
 on:
   push:
     branches:
-      - main  # Déclenche le workflow lorsqu'un push est effectué sur la branche 'main'
+      - main
 
 jobs:
   deploy:
-    runs-on: ubuntu-latest  # Utilise un environnement Ubuntu pour exécuter le workflow
+    runs-on: ubuntu-latest
 
     steps:
       # 1. Vérifier le code
@@ -20,21 +20,20 @@ jobs:
         with:
           aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
           aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
-          aws-region: eu-north-1  # Remplacez avec votre région AWS
+          aws-region: eu-north-1
 
-      # 3. Télécharger et installer ecs-cli depuis l'archive
+      # 3. Télécharger ecs-cli et rendre exécutable
       - name: Install ecs-cli
         run: |
-          # Télécharger et extraire ecs-cli
-          curl -Lo ecs-cli.tar.gz https://github.com/aws/amazon-ecs-cli/releases/download/v1.21.0/ecs-cli-linux-amd64.tar.gz
-          tar -xzvf ecs-cli.tar.gz
-          sudo mv ecs-cli-linux-amd64 /usr/local/bin/ecs-cli
-          sudo chmod +x /usr/local/bin/ecs-cli
+          # Télécharger ecs-cli binaire Linux directement
+          curl -Lo ecs-cli https://amazon-ecs-cli.s3.amazonaws.com/ecs-cli-linux-amd64-latest
+          chmod +x ecs-cli
+          sudo mv ecs-cli /usr/local/bin/
 
       # Vérification de l'installation de ecs-cli
       - name: Verify ecs-cli installation
         run: |
-          ecs-cli --version  # Vérifie que ecs-cli est bien installé
+          ecs-cli --version
 
       # 4. Construire l'image Docker
       - name: Build Docker image
@@ -48,7 +47,7 @@ jobs:
           docker tag cats-back:latest 084828604086.dkr.ecr.eu-north-1.amazonaws.com/cats/back:latest
           docker push 084828604086.dkr.ecr.eu-north-1.amazonaws.com/cats/back:latest
 
-      # 6. Mettre à jour ECS (avec ecs-cli)
+      # 6. Mettre à jour ECS
       - name: Update ECS Service
         run: |
           ecs-cli compose --file docker-compose.yml --project-name cats-back service up
