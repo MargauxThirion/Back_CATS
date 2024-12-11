@@ -22,19 +22,26 @@ jobs:
           aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
           aws-region: eu-north-1  # Remplacez avec votre région AWS
 
-      # 3. Construire l'image Docker
+      # 3. Installer ecs-cli
+      - name: Install ecs-cli
+        run: |
+          curl -Lo ecs-cli https://github.com/aws/amazon-ecs-cli/releases/download/v1.21.0/ecs-cli-linux-amd64
+          chmod +x ecs-cli
+          sudo mv ecs-cli /usr/local/bin/
+
+      # 4. Construire l'image Docker
       - name: Build Docker image
         run: |
-          docker build -t back_cats-app .
+          docker build -t cats-back .
 
-      # 4. Se connecter à ECR et pousser l'image Docker
+      # 5. Se connecter à ECR et pousser l'image Docker
       - name: Log in to Amazon ECR
         run: |
           aws ecr get-login-password --region eu-north-1 | docker login --username AWS --password-stdin 084828604086.dkr.ecr.eu-north-1.amazonaws.com
-          docker tag back_cats-app:latest 084828604086.dkr.ecr.eu-north-1.amazonaws.com/cats/back:latest
+          docker tag cats-back:latest 084828604086.dkr.ecr.eu-north-1.amazonaws.com/cats/back:latest
           docker push 084828604086.dkr.ecr.eu-north-1.amazonaws.com/cats/back:latest
 
-      # 5. Mettre à jour ECS ou Elastic Beanstalk (selon votre configuration)
+      # 6. Mettre à jour ECS (avec ecs-cli)
       - name: Update ECS Service
         run: |
-          ecs-cli compose --file docker-compose.yml --project-name BackCatsCluster service up
+          ecs-cli compose --file docker-compose.yml --project-name cats-back service up
