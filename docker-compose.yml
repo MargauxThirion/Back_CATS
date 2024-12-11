@@ -1,14 +1,20 @@
+version: '3'
+
 services:
-      app:
-        image: 084828604086.dkr.ecr.eu-north-1.amazonaws.com/cats/back:latest
-        environment:
-          - SPRING_DATASOURCE_URL=jdbc:postgresql://cats.cpg8euuoesk8.eu-north-1.rds.amazonaws.com:5432/postgres
-          - SPRING_DATASOURCE_USERNAME=postgres
-          - SPRING_DATASOURCE_PASSWORD=postgres
-        ports:
-          - "8080:8080"
-        networks:
-          - awsvpc
+  app:
+    image: 084828604086.dkr.ecr.eu-north-1.amazonaws.com/cats/back:latest
+    environment:
+      - SPRING_DATASOURCE_URL=jdbc:postgresql://cats.cpg8euuoesk8.eu-north-1.rds.amazonaws.com:5432/postgres
+      - SPRING_DATASOURCE_USERNAME=postgres
+      - SPRING_DATASOURCE_PASSWORD=postgres
+    ports:
+      - "8080:8080"
+    networks:
+      - default
+    deploy:
+      mode: replicated
+      replicas: 1
+
 networks:
-  awsvpc:
-    external: true
+  default:
+    external: false
