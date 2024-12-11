@@ -10,6 +10,5 @@ services:
         networks:
           - awsvpc
 networks:
-      awsvpc:
-      driver: bridge
-
+  awsvpc:
+    external: true
