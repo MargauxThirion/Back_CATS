@@ -31,10 +31,10 @@ jobs:
       - name: Log in to Amazon ECR
         run: |
           aws ecr get-login-password --region eu-north-1 | docker login --username AWS --password-stdin 084828604086.dkr.ecr.eu-north-1.amazonaws.com
-          docker tag your-image-name:latest 084828604086.dkr.ecr.eu-north-1.amazonaws.com/your-repo-name:latest
-          docker push 084828604086.dkr.ecr.eu-north-1.amazonaws.com/your-repo-name:latest
+          docker tag back_cats-app:latest 084828604086.dkr.ecr.eu-north-1.amazonaws.com/cats/back:latest
+          docker push 084828604086.dkr.ecr.eu-north-1.amazonaws.com/cats/back:latest
 
       # 5. Mettre à jour ECS ou Elastic Beanstalk (selon votre configuration)
       - name: Update ECS Service
         run: |
-          ecs-cli compose --file docker-compose.yml --project-name your-project-name service up
+          ecs-cli compose --file docker-compose.yml --project-name BackCatsCluster service up
