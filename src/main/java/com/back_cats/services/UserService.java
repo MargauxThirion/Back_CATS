@@ -40,11 +40,9 @@ public class UserService {
     public User getUser(ObjectId userId) {
         User user = userRepository.findById(userId)
                 .orElseThrow(() -> new UserException("Utilisateur introuvable avec l'ID : " + userId));
-
-        // Retourner l'utilisateur avec son ID sous forme de chaîne
-        user.setId(user.getId());
         return user;
     }
+
 
     public Iterable<User> getUsers() {
         return userRepository.findAll();
