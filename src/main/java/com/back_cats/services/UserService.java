@@ -10,7 +10,6 @@ import org.bson.types.ObjectId;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-
 @Service
 public class UserService {
 
@@ -33,14 +32,18 @@ public class UserService {
         Voiture voiture = voitureRepository.findById(voitureId)
                 .orElseThrow(() -> new VoitureException("Voiture introuvable avec l'ID : " + voitureId));
 
-        // Ajouter la voiture à l'utilisateur
-        user.getVoitures().add(voitureId);
+        // Ajouter la voiture à l'utilisateur (en utilisant l'ID de la voiture)
+        user.getVoitures().add(voitureId);  // Ajouter uniquement l'ID de la voiture à l'utilisateur
         return userRepository.save(user);
     }
 
     public User getUser(ObjectId userId) {
-        return userRepository.findById(userId)
+        User user = userRepository.findById(userId)
                 .orElseThrow(() -> new UserException("Utilisateur introuvable avec l'ID : " + userId));
+
+        // Retourner l'utilisateur avec son ID sous forme de chaîne
+        user.setId(user.getId());
+        return user;
     }
 
     public Iterable<User> getUsers() {

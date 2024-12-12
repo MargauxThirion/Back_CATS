@@ -1,5 +1,6 @@
 package com.back_cats.models;
 
+import com.fasterxml.jackson.annotation.JsonProperty;
 import org.bson.types.ObjectId;
 import org.springframework.data.annotation.Id;
 import org.springframework.data.mongodb.core.mapping.*;
@@ -9,6 +10,7 @@ import java.util.List;
 @Document(collection = "user")
 public class User {
     @Id
+    @JsonProperty("_id")
     private ObjectId id;
     private String mail;
     private String mot_de_passe;
