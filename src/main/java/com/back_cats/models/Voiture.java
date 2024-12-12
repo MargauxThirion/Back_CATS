@@ -1,23 +1,23 @@
 package com.back_cats.models;
+import org.bson.types.ObjectId;
+import org.springframework.data.annotation.Id;
+import org.springframework.data.mongodb.core.mapping.Document;
 
-import jakarta.persistence.*;
-@Entity
-@Table(name = "voitures")
+@Document(collection = "voiture")
 public class Voiture {
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Integer id;
-
+    private ObjectId id;
     private String marque;
     private String modele;
     private Integer annee;
     private Integer conso;
 
-    public Integer getId() {
+    // Getters et Setters
+    public ObjectId getId() {
         return id;
     }
 
-    public void setId(Integer id) {
+    public void setId(ObjectId id) {
         this.id = id;
     }
 
@@ -53,4 +53,3 @@ public class Voiture {
         this.conso = conso;
     }
 }
-

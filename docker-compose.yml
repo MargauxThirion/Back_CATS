@@ -1,20 +1,23 @@
-version: '3'
+version: '3.8'
 
 services:
-  app:
-    image: 084828604086.dkr.ecr.eu-north-1.amazonaws.com/cats/back:latest
-    environment:
-      - SPRING_DATASOURCE_URL=jdbc:postgresql://cats.cpg8euuoesk8.eu-north-1.rds.amazonaws.com:5432/postgres
-      - SPRING_DATASOURCE_USERNAME=postgres
-      - SPRING_DATASOURCE_PASSWORD=postgres
+  cats-back:
+    image: cats-back:latest  # Tu peux changer cela si tu utilises une image Docker différente
+    build:
+      context: .
     ports:
-      - "8080:8080"
+      - "8080:8080"  # Expose le port 8080 pour accéder à l'API Spring Boot
+    environment:
+      SPRING_DATASOURCE_URL: jdbc:postgresql://cats.cpg8euuoesk8.eu-north-1.rds.amazonaws.com:5432/postgres
+      SPRING_DATASOURCE_USERNAME: postgres
+      SPRING_DATASOURCE_PASSWORD: postgres
+      SPRING_JPA_HIBERNATE_DDL_AUTO: none
+      SPRING_JPA_DATABASE_PLATFORM: org.hibernate.dialect.PostgreSQLDialect
+      SPRING_APPLICATION_NAME: Back_CATS
+      SPRING_JACKSON_SERIALIZATION_FAIL_ON_EMPTY_BEANS: false
     networks:
-      - default
-    deploy:
-      mode: replicated
-      replicas: 1
+      - cats-network  # Optionnel, si tu souhaites utiliser un réseau personnalisé
 
 networks:
-  default:
-    external: false
+  cats-network:
+    driver: bridge  # Utilisation du driver de réseau 'bridge' pour la communication entre les services (si nécessaire)

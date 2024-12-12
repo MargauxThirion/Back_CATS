@@ -1,49 +1,49 @@
 package com.back_cats.services;
 
+import com.back_cats.exceptions.UserException;
+import com.back_cats.exceptions.VoitureException;
 import com.back_cats.models.User;
+import com.back_cats.models.Voiture;
 import com.back_cats.repositories.UserRepository;
+import com.back_cats.repositories.VoitureRepository;
+import org.bson.types.ObjectId;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import java.util.List;
-import java.util.Optional;
 
 @Service
 public class UserService {
 
-    private final UserRepository userRepository;
+    @Autowired
+    private UserRepository userRepository;
 
-    public UserService(UserRepository userRepository) {
-        this.userRepository = userRepository;
-    }
+    @Autowired
+    private VoitureRepository voitureRepository;
 
-    public User saveUser(User user) {
+    public User addUser(User user) {
         return userRepository.save(user);
     }
 
-    public List<User> getAllUsers() {
+    public User addVoitureToUser(ObjectId userId, ObjectId voitureId) {
+        // Vérifier si l'utilisateur existe
+        User user = userRepository.findById(userId)
+                .orElseThrow(() -> new UserException("Utilisateur introuvable avec l'ID : " + userId));
+
+        // Vérifier si la voiture existe
+        Voiture voiture = voitureRepository.findById(voitureId)
+                .orElseThrow(() -> new VoitureException("Voiture introuvable avec l'ID : " + voitureId));
+
+        // Ajouter la voiture à l'utilisateur
+        user.getVoitures().add(voitureId);
+        return userRepository.save(user);
+    }
+
+    public User getUser(ObjectId userId) {
+        return userRepository.findById(userId)
+                .orElseThrow(() -> new UserException("Utilisateur introuvable avec l'ID : " + userId));
+    }
+
+    public Iterable<User> getUsers() {
         return userRepository.findAll();
     }
-
-    public Optional<User> getUserById(Integer id) {
-        return userRepository.findById(id);
-    }
-
-    public User updateUser(Integer id, User userDetails) {
-        return userRepository.findById(id)
-                .map(user -> {
-                    user.setMail(userDetails.getMail());
-                    user.setMot_de_passe(userDetails.getMot_de_passe());
-                    user.setRole(userDetails.getRole());
-                    return userRepository.save(user);
-                })
-                .orElseGet(() -> {
-                    userDetails.setId(id);
-                    return userRepository.save(userDetails);
-                });
-    }
-
-    public void deleteUser(Integer id) {
-        userRepository.deleteById(id);
-    }
 }
-

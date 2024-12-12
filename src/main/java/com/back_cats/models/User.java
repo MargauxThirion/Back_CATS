@@ -1,36 +1,26 @@
 package com.back_cats.models;
 
-import jakarta.persistence.*;
+import org.bson.types.ObjectId;
+import org.springframework.data.annotation.Id;
+import org.springframework.data.mongodb.core.mapping.*;
+
 import java.util.List;
 
-@Entity
-@Table(name = "users")
+@Document(collection = "user")
 public class User {
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Integer id;
-
-    @Column(nullable = false, unique = true)
+    private ObjectId id;
     private String mail;
-
-    @Column(nullable = false)
     private String mot_de_passe;
-    @ManyToMany
-    @JoinTable(
-        name = "user_voiture",
-        joinColumns = @JoinColumn(name = "user_id"),
-        inverseJoinColumns = @JoinColumn(name = "voiture_id")
-    )
-    private List<Voiture> voitures;
-
-    @Column(nullable = false)
     private String role;
+    private List<ObjectId> voitures;
 
-    public Integer getId() {
+    // Getters et Setters
+    public ObjectId getId() {
         return id;
     }
 
-    public void setId(Integer id) {
+    public void setId(ObjectId id) {
         this.id = id;
     }
 
@@ -42,20 +32,12 @@ public class User {
         this.mail = mail;
     }
 
-    public String getMot_de_passe() {
+    public String getMotDePasse() {
         return mot_de_passe;
     }
 
-    public void setMot_de_passe(String mot_de_passe) {
-        this.mot_de_passe = mot_de_passe;
-    }
-
-    public List<Voiture> getVoitures() {
-        return voitures;
-    }
-
-    public void setVoitures(List<Voiture> voitures) {
-        this.voitures = voitures;
+    public void setMotDePasse(String motDePasse) {
+        this.mot_de_passe = motDePasse;
     }
 
     public String getRole() {
@@ -65,5 +47,12 @@ public class User {
     public void setRole(String role) {
         this.role = role;
     }
-}
 
+    public List<ObjectId> getVoitures() {
+        return voitures;
+    }
+
+    public void setVoitures(List<ObjectId> voitures) {
+        this.voitures = voitures;
+    }
+}
