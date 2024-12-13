@@ -1,9 +1,11 @@
 package com.back_cats.services;
 
-
 import com.back_cats.exceptions.BorneException;
+import com.back_cats.exceptions.TypeBorneException;
 import com.back_cats.models.Borne;
+import com.back_cats.models.TypeBorne;
 import com.back_cats.repositories.BorneRepository;
+import com.back_cats.repositories.TypeBorneRepository;
 import org.bson.types.ObjectId;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -17,11 +19,28 @@ public class BorneService {
     @Autowired
     private BorneRepository borneRepository;
 
+    @Autowired
+    private TypeBorneRepository typeBorneRepository;
+
     public List<Borne> findAllBornes() {
         return borneRepository.findAll();
     }
 
-    public Borne saveBorne(Borne borne) {
+    public Borne createBorne(Borne borne) {
+        String typeBorneIdStr = borne.getTypeBorne().getId();
+        ObjectId typeBorneId;
+        try {
+            typeBorneId = new ObjectId(typeBorneIdStr);
+        } catch (IllegalArgumentException e) {
+            throw new TypeBorneException("Invalid TypeBorne ID format: " + typeBorneIdStr);
+        }
+
+        // Verify that the TypeBorne exists
+        TypeBorne typeBorne = typeBorneRepository.findById(typeBorneId)
+                .orElseThrow(() -> new TypeBorneException("No TypeBorne found with id: " + typeBorneIdStr));
+
+        // Set the verified TypeBorne to the Borne
+        borne.setTypeBorne(typeBorne);
         return borneRepository.save(borne);
     }
 

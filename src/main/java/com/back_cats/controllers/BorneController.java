@@ -1,6 +1,7 @@
 package com.back_cats.controllers;
 
 import com.back_cats.exceptions.BorneException;
+import com.back_cats.exceptions.TypeBorneException;
 import com.back_cats.models.Borne;
 import com.back_cats.services.BorneService;
 import org.bson.types.ObjectId;
@@ -22,8 +23,13 @@ public class BorneController {
     }
 
     @PostMapping
-    public Borne createBorne(@RequestBody Borne borne) {
-        return borneService.saveBorne(borne);
+    public ResponseEntity<?> createBorne(@RequestBody Borne borne) {
+        try {
+            Borne createdBorne = borneService.createBorne(borne);
+            return ResponseEntity.ok(createdBorne);
+        } catch (TypeBorneException e) {
+            return ResponseEntity.badRequest().body(e.getMessage());
+        }
     }
 
     @GetMapping("/{id}")
@@ -55,4 +61,6 @@ public class BorneController {
             return ResponseEntity.notFound().build();
         }
     }
+
+
 }

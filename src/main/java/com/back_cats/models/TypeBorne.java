@@ -13,6 +13,14 @@ public class TypeBorne {
     private ObjectId id;
     private String nom;
 
+    public String getId() {
+        return id.toHexString();
+    }
+
+    public void setId(ObjectId id) {
+        this.id = id;
+    }
+
     public String getNom() {
         return nom;
     }
