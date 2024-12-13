@@ -8,6 +8,7 @@ import com.back_cats.repositories.UserRepository;
 import com.back_cats.repositories.VoitureRepository;
 import org.bson.types.ObjectId;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.dao.DataAccessException;
 import org.springframework.stereotype.Service;
 
 @Service
@@ -20,7 +21,19 @@ public class UserService {
     private VoitureRepository voitureRepository;
 
     public User addUser(User user) {
-        return userRepository.save(user);
+        try {
+            return userRepository.save(user);
+        } catch (DataAccessException e) {
+            throw new UserException("Erreur lors de l'ajout de l'utilisateur : " + e.getMessage());
+        }
+    }
+
+    public User findByMail(String mail) {
+        User user = userRepository.findByMail(mail);
+        if (user == null) {
+            throw new UserException("Aucun utilisateur trouvé avec l'adresse mail : " + mail);
+        }
+        return user;
     }
 
     public User addVoitureToUser(ObjectId userId, ObjectId voitureId) {
@@ -32,19 +45,25 @@ public class UserService {
         Voiture voiture = voitureRepository.findById(voitureId)
                 .orElseThrow(() -> new VoitureException("Voiture introuvable avec l'ID : " + voitureId));
 
-        // Ajouter la voiture à l'utilisateur (en utilisant l'ID de la voiture)
-        user.getVoitures().add(voitureId);  // Ajouter uniquement l'ID de la voiture à l'utilisateur
-        return userRepository.save(user);
+        // Ajouter la voiture à l'utilisateur
+        user.getVoitures().add(voitureId); // Ajouter uniquement l'ID de la voiture à l'utilisateur
+        try {
+            return userRepository.save(user);
+        } catch (DataAccessException e) {
+            throw new UserException("Erreur lors de l'ajout de la voiture à l'utilisateur : " + e.getMessage());
+        }
     }
 
     public User getUser(ObjectId userId) {
-        User user = userRepository.findById(userId)
+        return userRepository.findById(userId)
                 .orElseThrow(() -> new UserException("Utilisateur introuvable avec l'ID : " + userId));
-        return user;
     }
 
-
     public Iterable<User> getUsers() {
-        return userRepository.findAll();
+        try {
+            return userRepository.findAll();
+        } catch (DataAccessException e) {
+            throw new UserException("Erreur lors de la récupération des utilisateurs : " + e.getMessage());
+        }
     }
 }
