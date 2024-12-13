@@ -15,7 +15,7 @@ public class User {
     private String mail;
     private String mot_de_passe;
     private String role;
-    private List<ObjectId> voitures;
+    private List<Voiture> voitures;
 
     // Getters et Setters
     public String getId() {
@@ -50,11 +50,11 @@ public class User {
         this.role = role;
     }
 
-    public List<ObjectId> getVoitures() {
+    public List<Voiture> getVoitures() {
         return voitures;
     }
 
-    public void setVoitures(List<ObjectId> voitures) {
+    public void setVoitures(List<Voiture> voitures) {
         this.voitures = voitures;
     }
 }

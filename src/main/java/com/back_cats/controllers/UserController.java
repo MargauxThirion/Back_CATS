@@ -20,12 +20,12 @@ public class UserController {
         Iterable<User> users = userService.getUsers();
         return ResponseEntity.ok(users);
     }
-
     @PostMapping
     public ResponseEntity<User> addUser(@RequestBody User user) {
         User newUser = userService.addUser(user);
         return ResponseEntity.ok(newUser);
     }
+
 
     @PutMapping("/{userId}/voitures/{voitureId}")
     public ResponseEntity<User> addVoitureToUser(@PathVariable ObjectId userId, @PathVariable ObjectId voitureId) {

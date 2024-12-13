@@ -1,4 +1,5 @@
 package com.back_cats.models;
+import com.fasterxml.jackson.annotation.JsonProperty;
 import org.bson.types.ObjectId;
 import org.springframework.data.annotation.Id;
 import org.springframework.data.mongodb.core.mapping.Document;
@@ -6,6 +7,7 @@ import org.springframework.data.mongodb.core.mapping.Document;
 @Document(collection = "voiture")
 public class Voiture {
     @Id
+    @JsonProperty("_id")
     private ObjectId id;
     private String marque;
     private String modele;
@@ -13,8 +15,8 @@ public class Voiture {
     private Integer conso;
 
     // Getters et Setters
-    public ObjectId getId() {
-        return id;
+    public String getId() {
+        return id.toHexString();
     }
 
     public void setId(ObjectId id) {

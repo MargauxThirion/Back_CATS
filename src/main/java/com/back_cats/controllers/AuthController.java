@@ -9,6 +9,8 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import java.util.Map;
+
 @RestController
 @RequestMapping("/auth")
 public class AuthController {
@@ -23,5 +25,15 @@ public class AuthController {
             return ResponseEntity.ok(user);
         }
         return ResponseEntity.status(401).body("Echec de la connexion");
+    }
+
+    @PostMapping("/register")
+    public ResponseEntity<?> registerUser(@RequestBody Map<String, String> userDetails) {
+        String mail = userDetails.get("mail");
+        if (mail == null || mail.isEmpty()) {
+            return ResponseEntity.badRequest().body("Le mail est requis.");
+        }
+        User user = userService.registerNewUser(mail);
+        return ResponseEntity.ok(user);
     }
 }

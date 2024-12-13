@@ -11,6 +11,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.DataAccessException;
 import org.springframework.stereotype.Service;
 
+import java.util.ArrayList;
+
 @Service
 public class UserService {
 
@@ -45,8 +47,14 @@ public class UserService {
         Voiture voiture = voitureRepository.findById(voitureId)
                 .orElseThrow(() -> new VoitureException("Voiture introuvable avec l'ID : " + voitureId));
 
-        // Ajouter la voiture à l'utilisateur
-        user.getVoitures().add(voitureId); // Ajouter uniquement l'ID de la voiture à l'utilisateur
+        // Initialiser la liste si elle est nulle
+        if (user.getVoitures() == null) {
+            user.setVoitures(new ArrayList<>());
+        }
+
+        // Ajouter la voiture entière à la liste des voitures de l'utilisateur
+        user.getVoitures().add(voiture);
+
         try {
             return userRepository.save(user);
         } catch (DataAccessException e) {
@@ -64,6 +72,19 @@ public class UserService {
             return userRepository.findAll();
         } catch (DataAccessException e) {
             throw new UserException("Erreur lors de la récupération des utilisateurs : " + e.getMessage());
+        }
+    }
+
+    public User registerNewUser(String mail) {
+        try {
+            User newUser = new User();
+            newUser.setMail(mail);
+            newUser.setMotDePasse(null); // Il est fortement conseillé de gérer le mot de passe de manière sécurisée.
+            newUser.setRole("User");
+            newUser.setVoitures(new ArrayList<>());
+            return userRepository.save(newUser);
+        } catch (DataAccessException e) {
+            throw new UserException("Erreur lors de l'enregistrement de l'utilisateur: " + e.getMessage());
         }
     }
 }
