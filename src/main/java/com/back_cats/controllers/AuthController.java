@@ -19,7 +19,7 @@ public class AuthController {
 
     @PostMapping("/login")
     public ResponseEntity<?> loginUser(@RequestBody User loginUser) {
-        User user = userService.findByMail(loginUser.getMail());
+        User user = userService.findByMail(loginUser.getMail().toLowerCase());
         if (user != null ) {
             // Connecter l'utilisateur
             return ResponseEntity.ok(user);
