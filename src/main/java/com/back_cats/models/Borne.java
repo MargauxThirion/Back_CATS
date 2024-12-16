@@ -3,6 +3,7 @@ package com.back_cats.models;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import org.bson.types.ObjectId;
 import org.springframework.data.annotation.Id;
+import org.springframework.data.mongodb.core.mapping.DBRef;
 import org.springframework.data.mongodb.core.mapping.Document;
 import org.springframework.data.mongodb.core.mapping.Field;
 
@@ -15,7 +16,7 @@ public class Borne {
     private Integer coord_x;
     private Integer coord_y;
 
-    @Field("type_borne")
+    @DBRef
     private TypeBorne typeBorne;
 
     public String getId() {

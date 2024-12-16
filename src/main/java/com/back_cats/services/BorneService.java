@@ -1,7 +1,5 @@
 package com.back_cats.services;
 
-import com.back_cats.exceptions.BorneException;
-import com.back_cats.exceptions.TypeBorneException;
 import com.back_cats.models.Borne;
 import com.back_cats.models.TypeBorne;
 import com.back_cats.repositories.BorneRepository;
@@ -22,49 +20,26 @@ public class BorneService {
     @Autowired
     private TypeBorneRepository typeBorneRepository;
 
-    public List<Borne> findAllBornes() {
+    public Borne saveBorne(Borne borne) {
+        if (borne.getTypeBorne() != null && borne.getTypeBorne().getId() != null) {
+            ObjectId typeBorneId = new ObjectId(borne.getTypeBorne().getId());
+            TypeBorne typeBorne = typeBorneRepository.findById(typeBorneId)
+                    .orElseThrow(() -> new RuntimeException("TypeBorne not found: " + borne.getTypeBorne().getId()));
+            borne.setTypeBorne(typeBorne);
+        }
+        return borneRepository.save(borne);
+    }
+
+
+    public List<Borne> getAllBornes() {
         return borneRepository.findAll();
     }
 
-    public Borne createBorne(Borne borne) {
-        String typeBorneIdStr = borne.getTypeBorne().getId();
-        ObjectId typeBorneId;
-        try {
-            typeBorneId = new ObjectId(typeBorneIdStr);
-        } catch (IllegalArgumentException e) {
-            throw new TypeBorneException("Invalid TypeBorne ID format: " + typeBorneIdStr);
-        }
-
-        // Verify that the TypeBorne exists
-        TypeBorne typeBorne = typeBorneRepository.findById(typeBorneId)
-                .orElseThrow(() -> new TypeBorneException("No TypeBorne found with id: " + typeBorneIdStr));
-
-        // Set the verified TypeBorne to the Borne
-        borne.setTypeBorne(typeBorne);
-        return borneRepository.save(borne);
+    public Optional<Borne> getBorneById(ObjectId id) {
+        return borneRepository.findById(id);
     }
 
-    public Borne updateBorne(ObjectId id, Borne updatedBorne) throws BorneException {
-        Borne borne = borneRepository.findById(id).orElseThrow(() ->
-                new BorneException("Borne not found with id: " + id));
-
-        borne.setStatus(updatedBorne.getStatus());
-        borne.setCoord_x(updatedBorne.getCoord_x());
-        borne.setCoord_y(updatedBorne.getCoord_y());
-        borne.setTypeBorne(updatedBorne.getTypeBorne());
-
-        return borneRepository.save(borne);
-    }
-
-    public Borne findBorneById(ObjectId id) throws BorneException {
-        return borneRepository.findById(id).orElseThrow(() ->
-                new BorneException("Borne not found with id: " + id));
-    }
-
-    public void deleteBorne(ObjectId id) throws BorneException {
-        Borne borne = borneRepository.findById(id).orElseThrow(() ->
-                new BorneException("Borne not found with id: " + id));
-        borneRepository.delete(borne);
+    public void deleteBorne(ObjectId id) {
+        borneRepository.deleteById(id);
     }
 }
-

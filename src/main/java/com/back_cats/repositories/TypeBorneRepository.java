@@ -10,4 +10,6 @@ import java.util.Optional;
 @Repository
 public interface TypeBorneRepository extends MongoRepository<TypeBorne, ObjectId> {
     Optional<TypeBorne> findByNom(String nom);
+
+    Optional<TypeBorne> findById(String typeId);
 }
