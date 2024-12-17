@@ -84,25 +84,4 @@ public class CarteService {
         return carteRepository.findByNom(nom);
     }
 
-    public Carte addBorneToCarte(ObjectId carteId, ObjectId borneId) {
-        Carte carte = carteRepository.findById(carteId)
-                .orElseThrow(() -> new IllegalArgumentException("Carte not found"));
-        Borne borneToAdd = borneRepository.findById(borneId)
-                .orElseThrow(() -> new IllegalArgumentException("Borne not found"));
-
-        // Vérifiez si la borne est déjà dans la liste des bornes de la carte
-        boolean alreadyExists = carte.getBornes().stream()
-                .anyMatch(borne -> borne.getId().equals(borneToAdd.getId()));
-
-        if (!alreadyExists) {
-            carte.getBornes().add(borneToAdd);
-            carteRepository.save(carte);
-        } else {
-            throw new IllegalStateException("La borne est déjà associée à cette carte");
-        }
-
-        return carte;
-    }
-
-
 }

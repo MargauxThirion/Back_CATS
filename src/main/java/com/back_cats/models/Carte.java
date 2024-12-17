@@ -1,5 +1,6 @@
 package com.back_cats.models;
 
+import com.fasterxml.jackson.annotation.JsonProperty;
 import org.bson.types.ObjectId;
 import org.springframework.data.annotation.Id;
 import org.springframework.data.mongodb.core.mapping.DBRef;
@@ -11,12 +12,11 @@ import java.util.List;
 @Document(collection = "carte")
 public class Carte {
     @Id
+    @JsonProperty("_id")
     private ObjectId id;
     private String carte; // Chemin vers la photo jpeg
     private String nom;
 
-    @DBRef
-    private List<Borne> bornes; // Liste des bornes associées
 
     public String getId() {
         return id.toHexString();
@@ -42,11 +42,4 @@ public class Carte {
         this.nom = nom;
     }
 
-    public List<Borne> getBornes() {
-        return bornes;
-    }
-
-    public void setBornes(List<Borne> bornes) {
-        this.bornes = bornes;
-    }
 }

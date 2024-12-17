@@ -15,9 +15,11 @@ public class Borne {
     private String status;
     private Integer coord_x;
     private Integer coord_y;
-
+    private Integer numero;
     @DBRef
     private TypeBorne typeBorne;
+    @DBRef
+    private Carte carte;
 
     public String getId() {
         return id.toHexString();
@@ -56,5 +58,21 @@ public class Borne {
 
     public void setTypeBorne(TypeBorne typeBorne) {
         this.typeBorne = typeBorne;
+    }
+
+    public Integer getNumero() {
+        return numero;
+    }
+
+    public void setNumero(Integer numero) {
+        this.numero = numero;
+    }
+
+    public Carte getCarte() {
+        return carte;
+    }
+
+    public void setCarte(Carte carte) {
+        this.carte = carte;
     }
 }

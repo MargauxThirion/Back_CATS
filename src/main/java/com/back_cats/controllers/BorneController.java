@@ -48,6 +48,27 @@ public class BorneController {
                 }).orElseGet(() -> ResponseEntity.notFound().build());
     }
 
+    @PatchMapping("/{id}")
+    public ResponseEntity<Borne> patchBorne(@PathVariable String id, @RequestBody Borne newBorne) {
+        return borneService.getBorneById(new ObjectId(id))
+                .map(existingBorne -> {
+                    if (newBorne.getStatus() != null) {
+                        existingBorne.setStatus(newBorne.getStatus());
+                    }
+                    if (newBorne.getCoord_x() != null) {
+                        existingBorne.setCoord_x(newBorne.getCoord_x());
+                    }
+                    if (newBorne.getCoord_y() != null) {
+                        existingBorne.setCoord_y(newBorne.getCoord_y());
+                    }
+                    if (newBorne.getTypeBorne() != null) {
+                        existingBorne.setTypeBorne(newBorne.getTypeBorne());
+                    }
+                    return ResponseEntity.ok(borneService.saveBorne(existingBorne));
+                }).orElseGet(() -> ResponseEntity.notFound().build());
+    }
+
+
     @DeleteMapping("/{id}")
     public ResponseEntity<Void> deleteBorne(@PathVariable String id) {
         Optional<Borne> borne = borneService.getBorneById(new ObjectId(id));
