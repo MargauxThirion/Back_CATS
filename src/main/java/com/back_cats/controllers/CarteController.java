@@ -4,12 +4,17 @@ import com.back_cats.models.Carte;
 import com.back_cats.services.CarteService;
 import org.bson.types.ObjectId;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.core.io.Resource;
+import org.springframework.core.io.UrlResource;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.util.List;
 
 @RestController
@@ -26,7 +31,7 @@ public class CarteController {
     }
 
     @GetMapping("/{id}")
-    public ResponseEntity<Carte> getCarteById(@PathVariable String id) {
+    public ResponseEntity<Carte> getCarteById(@PathVariable ObjectId id) {
         Carte carte = carteService.getCarteById(id);
         return ResponseEntity.ok(carte);
     }
@@ -60,15 +65,15 @@ public class CarteController {
 
 
     @PutMapping("/{id}")
-    public ResponseEntity<Carte> updateCarte(@PathVariable String id, @RequestBody Carte carte) {
+    public ResponseEntity<Carte> updateCarte(@PathVariable ObjectId id, @RequestBody Carte carte) {
         getCarteById(id); // Ensure the carte exists before update
-        carte.setId(new ObjectId(id));
+        carte.setId(id);
         Carte updatedCarte = carteService.saveCarte(carte);
         return ResponseEntity.ok(updatedCarte);
     }
 
     @DeleteMapping("/{id}")
-    public ResponseEntity<Void> deleteCarte(@PathVariable String id) {
+    public ResponseEntity<Void> deleteCarte(@PathVariable ObjectId id) {
         carteService.deleteCarte(id);
         return ResponseEntity.ok().build();
     }
@@ -82,5 +87,28 @@ public class CarteController {
             return ResponseEntity.badRequest().body(null);
         }
     }
+
+    @GetMapping("/photo/{id}")
+    public ResponseEntity<Resource> getCartePhoto(@PathVariable ObjectId id) {
+        try {
+            Carte carte = carteService.getCarteById(id);
+            if (carte == null || carte.getCarte() == null) {
+                return ResponseEntity.notFound().build();
+            }
+
+            Path filePath = Paths.get(carte.getCarte()).toAbsolutePath().normalize();
+            Resource resource = new UrlResource(filePath.toUri());
+            if (resource.exists() && resource.isReadable()) {
+                return ResponseEntity.ok()
+                        .contentType(MediaType.IMAGE_JPEG)  // Assurez-vous de définir le bon type MIME
+                        .body(resource);
+            } else {
+                return ResponseEntity.notFound().build();
+            }
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
+        }
+    }
+
 
 }

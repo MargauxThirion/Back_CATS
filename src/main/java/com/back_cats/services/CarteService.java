@@ -64,16 +64,18 @@ public class CarteService {
         return carteRepository.findAll();
     }
 
-    public Carte getCarteById(String id) {
-        return carteRepository.findById(new ObjectId(id))
+    public Carte getCarteById(ObjectId id) {
+        return carteRepository.findById(id)
                 .orElseThrow(() -> new CarteException("Carte not found with id: " + id));
     }
+
+
 
     public Carte saveCarte(Carte carte) {
         return carteRepository.save(carte);
     }
 
-    public void deleteCarte(String id) {
+    public void deleteCarte(ObjectId id) {
         Carte carte = getCarteById(id); // This ensures the carte exists before attempting to delete.
         carteRepository.delete(carte);
     }
