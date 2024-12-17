@@ -4,6 +4,7 @@ import com.back_cats.models.Carte;
 import com.back_cats.services.CarteService;
 import org.bson.types.ObjectId;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
@@ -30,16 +31,33 @@ public class CarteController {
         return ResponseEntity.ok(carte);
     }
 
-    @PostMapping(consumes = {"multipart/form-data"})
-    public ResponseEntity<Carte> createCarte(@RequestPart("carte") Carte carte,
-                                             @RequestPart("file") MultipartFile file) {
-        try {
-            Carte newCarte = carteService.createCarte(carte, file);
+    @PostMapping
+    public ResponseEntity<?> createCarte(@RequestBody Carte carte) {
+        if (carteService.getNom(carte.getNom()) != null) {
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Une carte du même nom existe déjà");
+        }
+        Carte newCarte = carteService.createCarte(carte);
+        if (newCarte != null) {
             return ResponseEntity.ok(newCarte);
+        }
+        return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Impossible de créer la carte");
+    }
+
+    @PatchMapping("photo/{id}")
+    public ResponseEntity<String> addPhotoToCarte(
+            @PathVariable String id, // Assurez-vous que le type correspond (String ou ObjectId)
+            @RequestParam("photo") MultipartFile photo) {
+        try {
+            carteService.addPhotoToCarte(new ObjectId(id), photo); // Convertir en ObjectId si nécessaire
+            return ResponseEntity.status(HttpStatus.CREATED).body("Photo ajoutée avec succès");
         } catch (IOException e) {
-            return ResponseEntity.internalServerError().build();
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Erreur lors de l'ajout de la photo: " + e.getMessage());
+        } catch (IllegalArgumentException e) {
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(e.getMessage());
         }
     }
+
+
 
     @PutMapping("/{id}")
     public ResponseEntity<Carte> updateCarte(@PathVariable String id, @RequestBody Carte carte) {

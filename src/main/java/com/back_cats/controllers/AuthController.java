@@ -33,6 +33,9 @@ public class AuthController {
         if (mail == null || mail.isEmpty()) {
             return ResponseEntity.badRequest().body("Le mail est requis.");
         }
+        if (userService.findByMail(mail) != null) {
+            return ResponseEntity.badRequest().body("Un utilisateur avec ce mail existe déjà.");
+        }
         User user = userService.registerNewUser(mail);
         return ResponseEntity.ok(user);
     }
