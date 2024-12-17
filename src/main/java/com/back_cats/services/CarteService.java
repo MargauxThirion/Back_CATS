@@ -1,7 +1,9 @@
 package com.back_cats.services;
 
 import com.back_cats.exceptions.CarteException;
+import com.back_cats.models.Borne;
 import com.back_cats.models.Carte;
+import com.back_cats.repositories.BorneRepository;
 import com.back_cats.repositories.CarteRepository;
 import org.bson.types.ObjectId;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -12,6 +14,7 @@ import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
@@ -21,6 +24,9 @@ public class CarteService {
 
     @Autowired
     private CarteRepository carteRepository;
+
+    @Autowired
+    private BorneRepository borneRepository;
 
     private static final String UPLOAD_DIR = "images"; // Répertoire local pour stocker les images
 
@@ -75,4 +81,26 @@ public class CarteService {
     public Carte getNom(String nom) {
         return carteRepository.findByNom(nom);
     }
+
+    public Carte addBorneToCarte(ObjectId carteId, ObjectId borneId) {
+        Carte carte = carteRepository.findById(carteId)
+                .orElseThrow(() -> new IllegalArgumentException("Carte not found"));
+        Borne borneToAdd = borneRepository.findById(borneId)
+                .orElseThrow(() -> new IllegalArgumentException("Borne not found"));
+
+        // Vérifiez si la borne est déjà dans la liste des bornes de la carte
+        boolean alreadyExists = carte.getBornes().stream()
+                .anyMatch(borne -> borne.getId().equals(borneToAdd.getId()));
+
+        if (!alreadyExists) {
+            carte.getBornes().add(borneToAdd);
+            carteRepository.save(carte);
+        } else {
+            throw new IllegalStateException("La borne est déjà associée à cette carte");
+        }
+
+        return carte;
+    }
+
+
 }

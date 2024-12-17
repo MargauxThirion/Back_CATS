@@ -72,4 +72,15 @@ public class CarteController {
         carteService.deleteCarte(id);
         return ResponseEntity.ok().build();
     }
+
+    @PostMapping("/{carteId}/addBorne/{borneId}")
+    public ResponseEntity<Carte> addBorneToCarte(@PathVariable ObjectId carteId, @PathVariable ObjectId borneId) {
+        try {
+            Carte updatedCarte = carteService.addBorneToCarte(carteId, borneId);
+            return ResponseEntity.ok(updatedCarte);
+        } catch (IllegalArgumentException e) {
+            return ResponseEntity.badRequest().body(null);
+        }
+    }
+
 }
