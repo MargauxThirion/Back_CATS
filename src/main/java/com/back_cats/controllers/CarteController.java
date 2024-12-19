@@ -87,6 +87,7 @@ public class CarteController {
             }
 
             Path filePath = Paths.get(carte.getCarte()).toAbsolutePath().normalize();
+            System.out.println("File path: " + filePath);
             Resource resource = new UrlResource(filePath.toUri());
             if (resource.exists() && resource.isReadable()) {
                 return ResponseEntity.ok()
