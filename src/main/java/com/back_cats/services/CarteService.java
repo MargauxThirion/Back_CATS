@@ -7,6 +7,7 @@ import com.back_cats.repositories.BorneRepository;
 import com.back_cats.repositories.CarteRepository;
 import org.bson.types.ObjectId;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.mongodb.gridfs.GridFsTemplate;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -30,27 +31,19 @@ public class CarteService {
 
     private static final String UPLOAD_DIR = "images"; // Répertoire local pour stocker les images
 
+    @Autowired
+    private GridFsTemplate gridFsTemplate;
 
     public void addPhotoToCarte(ObjectId id, MultipartFile file) throws IOException {
         Optional<Carte> carteOpt = carteRepository.findById(id);
         if (carteOpt.isPresent() && !file.isEmpty()) {
-            // Générer un nom unique pour le fichier
-            String fileName = carteOpt.get().getNom() + "_" + UUID.randomUUID() + ".jpg";
+            // Enregistrer le fichier dans GridFS
+            ObjectId fileId = gridFsTemplate.store(file.getInputStream(), file.getOriginalFilename(), file.getContentType());
 
-            // Construire le chemin complet
-            Path filePath = Paths.get(UPLOAD_DIR, fileName);
-            System.out.println("Full path: " + filePath.toAbsolutePath());
-
-            // Créer les répertoires si nécessaire
-            Files.createDirectories(filePath.getParent());
-
-            // Sauvegarder le fichier sur le disque
-            Files.write(filePath, file.getBytes());
-
-            // Mettre à jour le chemin de la carte dans l'objet Carte
+            // Sauvegarder l'ID du fichier dans la base de données Carte
             Carte carte = carteOpt.get();
-            carte.setCarte(filePath.toString());
-            carteRepository.save(carte); // Sauvegarde l'objet Carte mis à jour
+            carte.setCarte(fileId.toHexString());
+            carteRepository.save(carte);
         } else {
             throw new IllegalArgumentException("Carte not found or file is empty");
         }

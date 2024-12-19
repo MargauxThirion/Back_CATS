@@ -2,10 +2,16 @@ package com.back_cats.controllers;
 
 import com.back_cats.models.Carte;
 import com.back_cats.services.CarteService;
+import com.mongodb.client.gridfs.model.GridFSFile;
 import org.bson.types.ObjectId;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.core.io.Resource;
 import org.springframework.core.io.UrlResource;
+import org.springframework.data.mongodb.core.query.Criteria;
+import org.springframework.data.mongodb.core.query.Query;
+import org.springframework.data.mongodb.gridfs.GridFsResource;
+import org.springframework.data.mongodb.gridfs.GridFsTemplate;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
@@ -23,6 +29,9 @@ public class CarteController {
 
     @Autowired
     private CarteService carteService;
+
+    @Autowired
+    private GridFsTemplate gridFsTemplate;
 
     @GetMapping
     public ResponseEntity<List<Carte>> getAllCartes() {
@@ -78,6 +87,7 @@ public class CarteController {
         return ResponseEntity.ok().build();
     }
 
+
     @GetMapping("/photo/{id}")
     public ResponseEntity<Resource> getCartePhoto(@PathVariable ObjectId id) {
         try {
@@ -86,16 +96,16 @@ public class CarteController {
                 return ResponseEntity.notFound().build();
             }
 
-            Path filePath = Paths.get(carte.getCarte()).toAbsolutePath().normalize();
-            System.out.println("File path: " + filePath);
-            Resource resource = new UrlResource(filePath.toUri());
-            if (resource.exists() && resource.isReadable()) {
-                return ResponseEntity.ok()
-                        .contentType(MediaType.IMAGE_JPEG)  // Assurez-vous de définir le bon type MIME
-                        .body(resource);
-            } else {
+            // Récupérer le fichier depuis GridFS
+            GridFSFile gridFSFile = gridFsTemplate.findOne(new Query(Criteria.where("_id").is(new ObjectId(carte.getCarte()))));
+            if (gridFSFile == null) {
                 return ResponseEntity.notFound().build();
             }
+
+            GridFsResource resource = gridFsTemplate.getResource(gridFSFile);
+            return ResponseEntity.ok()
+                    .contentType(MediaType.parseMediaType(resource.getContentType()))
+                    .body(resource);
         } catch (Exception e) {
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
         }
