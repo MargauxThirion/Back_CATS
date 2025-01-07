@@ -46,4 +46,10 @@ public class SignalementController {
         return ResponseEntity.ok(signalements);
     }
 
+    @DeleteMapping("/{id}")
+    public ResponseEntity<String> deleteSignalement(@PathVariable ObjectId id) {
+        signalementService.deleteSignalement(id);
+        return ResponseEntity.ok("Signalement supprimé avec succès.");
+    }
+
 }

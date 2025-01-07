@@ -23,6 +23,7 @@ public class Signalement {
 
     private String motif;
     private Date date;
+    private String etat = "En attente";
 
     public Borne getBorne() {
         return idborne;
@@ -62,5 +63,13 @@ public class Signalement {
 
     public void setDate(Date date) {
         this.date = date;
+    }
+
+    public String getEtat() {
+        return etat;
+    }
+
+    public void setEtat(String etat) {
+        this.etat = etat;
     }
 }

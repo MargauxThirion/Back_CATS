@@ -82,9 +82,9 @@ public class CarteController {
     }
 
     @DeleteMapping("/{id}")
-    public ResponseEntity<Void> deleteCarte(@PathVariable ObjectId id) {
+    public ResponseEntity<String> deleteCarte(@PathVariable ObjectId id) {
         carteService.deleteCarte(id);
-        return ResponseEntity.ok().build();
+        return ResponseEntity.ok("Carte supprimée avec succès.");
     }
 
 

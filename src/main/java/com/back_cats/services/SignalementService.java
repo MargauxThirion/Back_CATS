@@ -9,6 +9,7 @@ import com.back_cats.repositories.UserRepository;
 import org.bson.types.ObjectId;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import java.util.Date;
 
 @Service
 public class SignalementService {
@@ -23,13 +24,15 @@ public class SignalementService {
     private UserRepository userRepository;
 
     public Signalement saveSignalement(Signalement signalement){
-        System.out.println("Signalement: " + signalement.getDate() + " " + signalement.getMotif() + " " + signalement.getBorne() + " " + signalement.getUser());
         if(signalement.getBorne() != null && signalement.getBorne().getId() != null){
             ObjectId borneId = new ObjectId(signalement.getBorne().getId());
             System.out.println("Borne ID: " + borneId);
             Borne borne = borneRepository.findById(borneId)
                     .orElseThrow(() -> new RuntimeException("Borne not found"));
             signalement.setBorne(borne);
+
+            borne.setStatus("Signalée");
+            borneRepository.save(borne);
         }
 
         if(signalement.getUser() != null && signalement.getUser().getId() != null){
@@ -39,6 +42,9 @@ public class SignalementService {
                     .orElseThrow(() -> new RuntimeException("User not found"));
             signalement.setUser(user);
         }
+        signalement.setEtat("En attente");
+        signalement.setDate(new Date());
+
 
         return signalementRepository.save(signalement);
     }
@@ -61,6 +67,9 @@ public class SignalementService {
         // Mise à jour de la date si présente dans la requête
         if (signalement.getDate() != null) {
             existingSignalement.setDate(signalement.getDate());
+        }
+        if (signalement.getEtat() != null) {
+            existingSignalement.setEtat(signalement.getEtat());
         }
 
         // Mise à jour de la borne associée si présente dans la requête
@@ -86,6 +95,10 @@ public class SignalementService {
 
     public Iterable<Signalement> getSignalements() {
         return signalementRepository.findAll();
+    }
+
+    public void deleteSignalement(ObjectId id) {
+        signalementRepository.deleteById(id);
     }
 }
 

@@ -12,7 +12,7 @@ public class Borne {
     @Id
     @JsonProperty("_id")
     private ObjectId id;
-    private String status;
+    private String status = "Fonctionnelle";
     private Integer coord_x;
     private Integer coord_y;
     private Integer numero;

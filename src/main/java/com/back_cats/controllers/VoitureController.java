@@ -48,10 +48,10 @@ public class VoitureController {
     }
 
     @DeleteMapping("/{id}")
-    public ResponseEntity<?> deleteVoiture(@PathVariable ObjectId id) {
+    public ResponseEntity<String> deleteVoiture(@PathVariable ObjectId id) {
         try {
             voitureService.deleteVoiture(id);
-            return ResponseEntity.ok().build();
+            return ResponseEntity.ok("Voiture supprimée avec succès.");
         } catch (VoitureException e) {
             return ResponseEntity.notFound().build();
         }

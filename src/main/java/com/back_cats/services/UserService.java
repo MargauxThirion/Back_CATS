@@ -91,4 +91,12 @@ public class UserService {
     public User getUserByMail(String mail) {
         return userRepository.findByMail(mail);
     }
+
+    public void deleteUser(ObjectId userId) {
+        try {
+            userRepository.deleteById(userId);
+        } catch (DataAccessException e) {
+            throw new UserException("Erreur lors de la suppression de l'utilisateur : " + e.getMessage());
+        }
+    }
 }

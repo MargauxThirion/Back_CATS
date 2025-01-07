@@ -48,10 +48,10 @@ public class TypeBorneController {
     }
 
     @DeleteMapping("/{id}")
-    public ResponseEntity<Void> deleteTypeBorne(@PathVariable String id) {
+    public ResponseEntity<String> deleteTypeBorne(@PathVariable String id) {
         try {
             typeBorneService.deleteTypeBorne(new ObjectId(id));
-            return ResponseEntity.ok().build();
+            return ResponseEntity.ok("Type de borne supprimé avec succès.");
         } catch (TypeBorneException e) {
             return ResponseEntity.notFound().build();
         }
