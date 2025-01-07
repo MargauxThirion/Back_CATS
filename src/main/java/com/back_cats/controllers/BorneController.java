@@ -4,6 +4,7 @@ import com.back_cats.models.Borne;
 import com.back_cats.services.BorneService;
 import org.bson.types.ObjectId;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -77,5 +78,14 @@ public class BorneController {
             return ResponseEntity.ok().build();
         }
         return ResponseEntity.notFound().build();
+    }
+
+    @GetMapping("/status")
+    public ResponseEntity<List<Borne>> getBornesByStatus(@RequestParam String status) {
+        List<Borne> bornes = borneService.getBornesByStatus(status);
+        if (bornes.isEmpty()) {
+            return new ResponseEntity<>(HttpStatus.NO_CONTENT);
+        }
+        return new ResponseEntity<>(bornes, HttpStatus.OK);
     }
 }

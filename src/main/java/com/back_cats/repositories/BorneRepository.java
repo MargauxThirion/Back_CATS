@@ -10,7 +10,6 @@ import java.util.Optional;
 
 @Repository
 public interface BorneRepository extends MongoRepository<Borne, ObjectId> {
-
-
+    List<Borne> findByStatus(String status);
     List<Borne> findByCarteId(ObjectId carteId);
 }

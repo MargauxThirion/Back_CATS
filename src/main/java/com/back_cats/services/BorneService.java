@@ -84,4 +84,8 @@ public class BorneService {
     public void deleteBorne(ObjectId id) {
         borneRepository.deleteById(id);
     }
+
+    public List<Borne> getBornesByStatus(String status) {
+        return borneRepository.findByStatus(status);
+    }
 }
