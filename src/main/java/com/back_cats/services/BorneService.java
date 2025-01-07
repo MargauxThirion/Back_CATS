@@ -88,4 +88,24 @@ public class BorneService {
     public List<Borne> getBornesByStatus(String status) {
         return borneRepository.findByStatus(status);
     }
+
+    public Borne updateBorne(ObjectId id, Borne borne) {
+        Borne existingBorne = borneRepository.findById(id)
+                .orElseThrow(() -> new RuntimeException("Borne not found"));
+
+        if (borne.getNumero() != null) {
+            existingBorne.setNumero(borne.getNumero());
+        }
+        if (borne.getStatus() != null) {
+            existingBorne.setStatus(borne.getStatus());
+        }
+        if (borne.getTypeBorne() != null) {
+            existingBorne.setTypeBorne(borne.getTypeBorne());
+        }
+        if (borne.getCarte() != null) {
+            existingBorne.setCarte(borne.getCarte());
+        }
+
+        return borneRepository.save(existingBorne);
+    }
 }

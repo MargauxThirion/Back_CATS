@@ -1,6 +1,7 @@
 package com.back_cats.controllers;
 
 import com.back_cats.models.Borne;
+import com.back_cats.models.Reservation;
 import com.back_cats.services.BorneService;
 import org.bson.types.ObjectId;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -38,15 +39,9 @@ public class BorneController {
 
 
     @PutMapping("/{id}")
-    public ResponseEntity<Borne> updateBorne(@PathVariable String id, @RequestBody Borne newBorne) {
-        return borneService.getBorneById(new ObjectId(id))
-                .map(borne -> {
-                    borne.setStatus(newBorne.getStatus());
-                    borne.setCoord_x(newBorne.getCoord_x());
-                    borne.setCoord_y(newBorne.getCoord_y());
-                    borne.setTypeBorne(newBorne.getTypeBorne());
-                    return ResponseEntity.ok(borneService.saveBorne(borne));
-                }).orElseGet(() -> ResponseEntity.notFound().build());
+    public ResponseEntity<Borne> updateBorne (@PathVariable ObjectId id, @RequestBody Borne borne){
+        Borne updatedBorne = borneService.updateBorne(id, borne);
+        return ResponseEntity.ok(updatedBorne);
     }
 
     @PatchMapping("/{id}")

@@ -49,27 +49,40 @@ public class SignalementService {
     }
 
     public Signalement updateSignalement(ObjectId id, Signalement signalement){
+        // Recherche de l'instance existante de Signalement
         Signalement existingSignalement = signalementRepository.findById(id)
-                .orElse(null);
-        if(existingSignalement != null){
+                .orElseThrow(() -> new RuntimeException("Signalement not found"));
+
+        // Mise à jour du motif si présent dans la requête
+        if (signalement.getMotif() != null) {
             existingSignalement.setMotif(signalement.getMotif());
-            existingSignalement.setDate(signalement.getDate());
-            if(signalement.getBorne() != null && signalement.getBorne().getId() != null){
-                ObjectId borneId = new ObjectId(signalement.getBorne().getId());
-                Borne borne = borneRepository.findById(borneId)
-                        .orElseThrow(() -> new RuntimeException("Borne not found"));
-                existingSignalement.setBorne(borne);
-            }
-            if(signalement.getUser() != null && signalement.getUser().getId() != null){
-                ObjectId userId = new ObjectId(signalement.getUser().getId());
-                User user = userRepository.findById(userId)
-                        .orElseThrow(() -> new RuntimeException("User not found"));
-                existingSignalement.setUser(user);
-            }
-            return signalementRepository.save(existingSignalement);
         }
-        return null;
+
+        // Mise à jour de la date si présente dans la requête
+        if (signalement.getDate() != null) {
+            existingSignalement.setDate(signalement.getDate());
+        }
+
+        // Mise à jour de la borne associée si présente dans la requête
+        if (signalement.getBorne() != null && signalement.getBorne().getId() != null) {
+            ObjectId borneId = new ObjectId(signalement.getBorne().getId());
+            Borne borne = borneRepository.findById(borneId)
+                    .orElseThrow(() -> new RuntimeException("Borne not found"));
+            existingSignalement.setBorne(borne);
+        }
+
+        // Mise à jour de l'utilisateur associé si présent dans la requête
+        if (signalement.getUser() != null && signalement.getUser().getId() != null) {
+            ObjectId userId = new ObjectId(signalement.getUser().getId());
+            User user = userRepository.findById(userId)
+                    .orElseThrow(() -> new RuntimeException("User not found"));
+            existingSignalement.setUser(user);
+        }
+
+        // Sauvegarde de l'instance mise à jour de Signalement
+        return signalementRepository.save(existingSignalement);
     }
+
 
     public Iterable<Signalement> getSignalements() {
         return signalementRepository.findAll();

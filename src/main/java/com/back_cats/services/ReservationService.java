@@ -56,4 +56,24 @@ public class ReservationService {
     public void deleteReservation(ObjectId id) {
         reservationRepository.deleteById(id);
     }
+
+    public Reservation updateReservation (ObjectId id, Reservation reservation) {
+        Reservation existingReservation = reservationRepository.findById(id)
+                .orElseThrow(() -> new RuntimeException("Reservation not found"));
+
+        if (reservation.getDateDebut() != null) {
+            existingReservation.setDateDebut(reservation.getDateDebut());
+        }
+        if (reservation.getDateFin() != null) {
+            existingReservation.setDateFin(reservation.getDateFin());
+        }
+        if (reservation.getBorne() != null) {
+            existingReservation.setBorne(reservation.getBorne());
+        }
+        if (reservation.getUser() != null) {
+            existingReservation.setUser(reservation.getUser());
+        }
+
+        return reservationRepository.save(existingReservation);
+    }
 }

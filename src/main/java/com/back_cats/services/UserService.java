@@ -87,4 +87,8 @@ public class UserService {
             throw new UserException("Erreur lors de l'enregistrement de l'utilisateur: " + e.getMessage());
         }
     }
+
+    public User getUserByMail(String mail) {
+        return userRepository.findByMail(mail);
+    }
 }
