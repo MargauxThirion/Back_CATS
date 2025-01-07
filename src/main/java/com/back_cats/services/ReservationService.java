@@ -9,7 +9,8 @@ import com.back_cats.repositories.UserRepository;
 import org.bson.types.ObjectId;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-import java.util.List;
+
+import java.util.*;
 
 @Service
 public class ReservationService {
@@ -76,4 +77,21 @@ public class ReservationService {
 
         return reservationRepository.save(existingReservation);
     }
+
+    public List<Reservation> getActiveReservationsForDate(Date now, Date inThreeHours) {
+        List<Reservation> activeReservations = reservationRepository.findReservationsThatOverlap(now, inThreeHours);
+        return activeReservations;
+    }
+
+    public Set<String> getOccupiedBornesIds(Date startDate, Date endDate) {
+        List<Reservation> overlappingReservations = reservationRepository.findReservationsThatOverlap(startDate, endDate);
+        Set<String> occupiedBornes = new HashSet<>();
+        for (Reservation reservation : overlappingReservations) {
+            occupiedBornes.add(reservation.getBorne().getId());
+        }
+        return occupiedBornes;
+    }
+
+
+
 }

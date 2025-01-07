@@ -4,9 +4,13 @@ import com.back_cats.models.Reservation;
 import com.back_cats.services.ReservationService;
 import org.bson.types.ObjectId;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+
+import java.util.Date;
 import java.util.List;
+import java.util.Set;
 
 @RestController
 @RequestMapping("/reservation")
@@ -43,5 +47,12 @@ public class ReservationController {
     public ResponseEntity<Reservation> updateReservation(@PathVariable ObjectId id, @RequestBody Reservation reservation) {
         Reservation updatedReservation = reservationService.updateReservation(id, reservation);
         return ResponseEntity.ok(updatedReservation);
+    }
+
+    @GetMapping("/occupied-bornes")
+    public Set<String> getOccupiedBornes(
+            @RequestParam @DateTimeFormat(pattern="yyyy-MM-dd'T'HH:mm:ss") Date startDate,
+            @RequestParam @DateTimeFormat(pattern="yyyy-MM-dd'T'HH:mm:ss") Date endDate) {
+        return reservationService.getOccupiedBornesIds(startDate, endDate);
     }
 }

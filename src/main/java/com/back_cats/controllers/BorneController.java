@@ -5,11 +5,16 @@ import com.back_cats.models.Reservation;
 import com.back_cats.services.BorneService;
 import org.bson.types.ObjectId;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
+import java.util.Date;
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 
 @RestController
@@ -74,6 +79,24 @@ public class BorneController {
         }
         return ResponseEntity.notFound().build();
     }
+    @GetMapping("/etat")
+    public ResponseEntity<Map<String, List<Borne>>> getBornesStatus() {
+        Date instant = new Date(); // Utilise la date et l'heure actuelles
+        Map<String, List<Borne>> statusMap = borneService.getBornesStatus();
+        return ResponseEntity.ok(statusMap);
+    }
+
+    @GetMapping("/etat-date")
+    public ResponseEntity<Map<String, List<Borne>>> getBornesStatus(
+            @RequestParam @DateTimeFormat(pattern="yyyy-MM-dd'T'HH:mm:ss") Date start,
+            @RequestParam @DateTimeFormat(pattern="yyyy-MM-dd'T'HH:mm:ss") Date end) {
+        try {
+            Map<String, List<Borne>> statusMap = borneService.getBornesStatusByDate(start, end);
+            return ResponseEntity.ok(statusMap);
+        } catch (ParseException e) {
+            return ResponseEntity.badRequest().body(null); // Handle parse exceptions here
+        }
+    }
 
     @GetMapping("/status")
     public ResponseEntity<List<Borne>> getBornesByStatus(@RequestParam String status) {
@@ -83,6 +106,10 @@ public class BorneController {
         }
         return new ResponseEntity<>(bornes, HttpStatus.OK);
     }
+
+
+
+
 
 
 }

@@ -5,6 +5,7 @@ import org.springframework.data.annotation.Id;
 import org.springframework.data.mongodb.core.mapping.DBRef;
 import org.springframework.data.mongodb.core.mapping.Document;
 import java.time.LocalDateTime;
+import java.util.Date;
 
 @Document(collection = "reservation")
 public class Reservation {
@@ -16,8 +17,8 @@ public class Reservation {
         private Borne borne;
         @DBRef
         private User user;
-        private LocalDateTime dateDebut;
-        private LocalDateTime dateFin;
+        private Date dateDebut;
+        private Date dateFin;
 
         // Getters et Setters
         public String getId() {
@@ -43,19 +44,19 @@ public class Reservation {
             this.user = user;
         }
 
-        public LocalDateTime getDateDebut() {
+        public Date getDateDebut() {
             return dateDebut;
         }
 
-        public void setDateDebut(LocalDateTime dateDebut) {
+        public void setDateDebut(Date dateDebut) {
             this.dateDebut = dateDebut;
         }
 
-        public LocalDateTime getDateFin() {
+        public Date getDateFin() {
             return dateFin;
         }
 
-        public void setDateFin(LocalDateTime dateFin) {
+        public void setDateFin(Date dateFin) {
             this.dateFin = dateFin;
         }
 
