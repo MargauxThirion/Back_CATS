@@ -71,11 +71,11 @@ public class BorneController {
 
 
     @DeleteMapping("/{id}")
-    public ResponseEntity<Void> deleteBorne(@PathVariable String id) {
+    public ResponseEntity<String> deleteBorne(@PathVariable String id) {
         Optional<Borne> borne = borneService.getBorneById(new ObjectId(id));
         if (borne.isPresent()) {
             borneService.deleteBorne(new ObjectId(id));
-            return ResponseEntity.ok().build();
+            return ResponseEntity.ok("Borne supprimée avec succès.");
         }
         return ResponseEntity.notFound().build();
     }
