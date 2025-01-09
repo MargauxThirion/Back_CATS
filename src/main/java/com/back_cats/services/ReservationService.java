@@ -93,7 +93,10 @@ public class ReservationService {
         }
         return occupiedBornes;
     }
-
+    public List<Reservation> getReservationsByUser(String userId) {
+        ObjectId userObjectId = new ObjectId(userId);
+        return reservationRepository.findByUserId(userObjectId);
+    }
 
 
 }

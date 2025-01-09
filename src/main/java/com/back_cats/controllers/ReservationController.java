@@ -59,4 +59,14 @@ public class ReservationController {
             @RequestParam @DateTimeFormat(pattern="yyyy-MM-dd'T'HH:mm:ss") Date endDate) {
         return reservationService.getOccupiedBornesIds(startDate, endDate);
     }
+
+    @GetMapping("/user/{userId}")
+    public ResponseEntity<List<Reservation>> getReservationsByUser(@PathVariable String userId) {
+        try {
+            List<Reservation> reservations = reservationService.getReservationsByUser(userId);
+            return ResponseEntity.ok(reservations);
+        } catch (Exception e) {
+            return ResponseEntity.badRequest().body(null); // or a more appropriate status and error handling
+        }
+    }
 }
