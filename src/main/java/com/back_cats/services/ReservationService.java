@@ -24,26 +24,28 @@ public class ReservationService {
     @Autowired
     private UserRepository userRepository;
 
-    public Reservation saveReservation(Reservation reservation) {
-        System.out.println("Reservation: " + reservation.getDateDebut() + " " + reservation.getDateFin() + " " + reservation.getBorne() + " " + reservation.getUser());
+    public Reservation saveReservation(Reservation reservation) throws Exception {
         if (reservation.getBorne() != null && reservation.getBorne().getId() != null) {
             ObjectId borneId = new ObjectId(reservation.getBorne().getId());
-            System.out.println("Borne ID: " + borneId);
-            Borne borne = borneRepository.findById(borneId)
-                    .orElseThrow(() -> new RuntimeException("Borne not found"));
+            List<Reservation> overlappingReservations = reservationRepository.findOverlappingReservations(borneId, reservation.getDateDebut(), reservation.getDateFin());
+
+            if (!overlappingReservations.isEmpty()) {
+                throw new Exception("This time slot is already booked for this borne.");
+            }
+
+            Borne borne = borneRepository.findById(borneId).orElseThrow(() -> new RuntimeException("Borne not found"));
             reservation.setBorne(borne);
         }
 
         if (reservation.getUser() != null && reservation.getUser().getId() != null) {
             ObjectId userId = new ObjectId(reservation.getUser().getId());
-            System.out.println("User ID: " + userId);
-            User user = userRepository.findById(userId)
-                    .orElseThrow(() -> new RuntimeException("User not found"));
+            User user = userRepository.findById(userId).orElseThrow(() -> new RuntimeException("User not found"));
             reservation.setUser(user);
         }
 
         return reservationRepository.save(reservation);
     }
+
 
 
     public List<Reservation> getAllReservations() {
