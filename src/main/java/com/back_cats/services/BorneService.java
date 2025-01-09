@@ -143,20 +143,62 @@ public class BorneService {
         statusMap.put("signalee", new ArrayList<>());
 
         for (Borne borne : allBornes) {
-            String statusKey = normalizeKey(borne.getStatus()); // Utilisez la fonction de normalisation ici
-            if (!statusMap.containsKey(statusKey)) {
-                statusMap.put(statusKey, new ArrayList<>());
-            }
+            if (borne.getTypeBorne() != null && "voiture".equals(borne.getTypeBorne().getNom())) {
+                String statusKey = normalizeKey(borne.getStatus()); // Utilisez la fonction de normalisation ici
+                if (!statusMap.containsKey(statusKey)) {
+                    statusMap.put(statusKey, new ArrayList<>());
+                }
 
-            if (statusKey.equals("hs")) {
-                statusMap.get(statusKey).add(borne);
-            } else if (statusKey.equals("signalee")) {
-                statusMap.get(statusKey).add(borne);
-            } else if (statusKey.equals("fonctionnelle")) {
-                if (occupiedIds.contains(borne.getId())) {
-                    statusMap.get("occupee").add(borne);
-                } else {
-                    statusMap.get("disponible").add(borne);
+                if (statusKey.equals("hs")) {
+                    statusMap.get(statusKey).add(borne);
+                } else if (statusKey.equals("signalee")) {
+                    statusMap.get(statusKey).add(borne);
+                } else if (statusKey.equals("fonctionnelle")) {
+                    if (occupiedIds.contains(borne.getId())) {
+                        statusMap.get("occupee").add(borne);
+                    } else {
+                        statusMap.get("disponible").add(borne);
+                    }
+                }
+            }
+        }
+        statusMap.remove("fonctionnelle");
+        return statusMap;
+    }
+
+    public Map<String, List<Borne>> getBornesVeloStatus() {
+        Date now = new Date();
+        Date inThreeHours = new Date(now.getTime() + 3 * 60 * 60 * 1000);
+        List<Borne> allBornes = borneRepository.findAll();
+        List<Reservation> activeReservations = reservationService.getActiveReservationsForDate(now, inThreeHours);
+        Set<String> occupiedIds = new HashSet<>();
+        for (Reservation reservation : activeReservations) {
+            occupiedIds.add(reservation.getBorne().getId());
+        }
+
+        Map<String, List<Borne>> statusMap = new HashMap<>();
+        statusMap.put("disponible", new ArrayList<>());
+        statusMap.put("occupee", new ArrayList<>());
+        statusMap.put("hs", new ArrayList<>());
+        statusMap.put("signalee", new ArrayList<>());
+
+        for (Borne borne : allBornes) {
+            if (borne.getTypeBorne() != null && "vélo".equals(borne.getTypeBorne().getNom())) {
+                String statusKey = normalizeKey(borne.getStatus()); // Utilisez la fonction de normalisation ici
+                if (!statusMap.containsKey(statusKey)) {
+                    statusMap.put(statusKey, new ArrayList<>());
+                }
+
+                if (statusKey.equals("hs")) {
+                    statusMap.get(statusKey).add(borne);
+                } else if (statusKey.equals("signalee")) {
+                    statusMap.get(statusKey).add(borne);
+                } else if (statusKey.equals("fonctionnelle")) {
+                    if (occupiedIds.contains(borne.getId())) {
+                        statusMap.get("occupee").add(borne);
+                    } else {
+                        statusMap.get("disponible").add(borne);
+                    }
                 }
             }
         }
@@ -165,7 +207,7 @@ public class BorneService {
     }
 
     public Map<String, List<Borne>> getBornesStatusByDate(Date start, Date end) throws ParseException {
-         List<Borne> allBornes = borneRepository.findAll();
+        List<Borne> allBornes = borneRepository.findAll();
         List<Reservation> activeReservations = reservationService.getActiveReservationsForDate(start, end);
         Set<String> occupiedIds = new HashSet<>();
         for (Reservation reservation : activeReservations) {
@@ -179,24 +221,65 @@ public class BorneService {
         statusMap.put("signalee", new ArrayList<>());
 
         for (Borne borne : allBornes) {
-            String statusKey = normalizeKey(borne.getStatus());
-            if (!statusMap.containsKey(statusKey)) {
-                statusMap.put(statusKey, new ArrayList<>());
-            }
+            if (borne.getTypeBorne() != null && "voiture".equals(borne.getTypeBorne().getNom())) {
+                String statusKey = normalizeKey(borne.getStatus());
+                if (!statusMap.containsKey(statusKey)) {
+                    statusMap.put(statusKey, new ArrayList<>());
+                }
 
-            if (statusKey.equals("hs")) {
-                statusMap.get(statusKey).add(borne);
-            } else if (statusKey.equals("signalee")) {
-                statusMap.get(statusKey).add(borne);
-            } else if (statusKey.equals("fonctionnelle")) {
-                if (occupiedIds.contains(borne.getId())) {
-                    statusMap.get("occupee").add(borne);
-                } else {
-                    statusMap.get("disponible").add(borne);
+                if (statusKey.equals("hs")) {
+                    statusMap.get(statusKey).add(borne);
+                } else if (statusKey.equals("signalee")) {
+                    statusMap.get(statusKey).add(borne);
+                } else if (statusKey.equals("fonctionnelle")) {
+                    if (occupiedIds.contains(borne.getId())) {
+                        statusMap.get("occupee").add(borne);
+                    } else {
+                        statusMap.get("disponible").add(borne);
+                    }
                 }
             }
         }
         statusMap.remove("fonctionnelle");
         return statusMap;
     }
+
+    public Map<String, List<Borne>> getBornesVeloStatusByDate(Date start, Date end) throws ParseException {
+        List<Borne> allBornes = borneRepository.findAll();
+        List<Reservation> activeReservations = reservationService.getActiveReservationsForDate(start, end);
+        Set<String> occupiedIds = new HashSet<>();
+        for (Reservation reservation : activeReservations) {
+            occupiedIds.add(reservation.getBorne().getId());
+        }
+
+        Map<String, List<Borne>> statusMap = new HashMap<>();
+        statusMap.put("disponible", new ArrayList<>());
+        statusMap.put("occupee", new ArrayList<>());
+        statusMap.put("hs", new ArrayList<>());
+        statusMap.put("signalee", new ArrayList<>());
+
+        for (Borne borne : allBornes) {
+            if (borne.getTypeBorne() != null && "vélo".equals(borne.getTypeBorne().getNom())) {
+                String statusKey = normalizeKey(borne.getStatus());
+                if (!statusMap.containsKey(statusKey)) {
+                    statusMap.put(statusKey, new ArrayList<>());
+                }
+
+                if (statusKey.equals("hs")) {
+                    statusMap.get(statusKey).add(borne);
+                } else if (statusKey.equals("signalee")) {
+                    statusMap.get(statusKey).add(borne);
+                } else if (statusKey.equals("fonctionnelle")) {
+                    if (occupiedIds.contains(borne.getId())) {
+                        statusMap.get("occupee").add(borne);
+                    } else {
+                        statusMap.get("disponible").add(borne);
+                    }
+                }
+            }
+        }
+        statusMap.remove("fonctionnelle");
+        return statusMap;
+    }
+
 }
