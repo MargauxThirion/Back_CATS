@@ -125,6 +125,25 @@ public class BorneController {
         return new ResponseEntity<>(bornes, HttpStatus.OK);
     }
 
+    @PutMapping("/{borneId}/status/hs")
+    public ResponseEntity<Borne> updateBorneStatusToHS(@PathVariable String borneId) {
+        try {
+            Borne updatedBorne = borneService.setBorneStatusToHS(borneId);
+            return ResponseEntity.ok(updatedBorne);
+        } catch (Exception e) {
+            return ResponseEntity.badRequest().body(null); // Gérer l'exception si la borne n'est pas trouvée
+        }
+    }
+
+    @PutMapping("/{borneId}/status/Fonctionnelle")
+    public ResponseEntity<Borne> updateBorneStatusToFonctionnelle(@PathVariable String borneId) {
+        try {
+            Borne updatedBorne = borneService.setBorneStatusToFonctionnelle(borneId);
+            return ResponseEntity.ok(updatedBorne);
+        } catch (Exception e) {
+            return ResponseEntity.badRequest().body(null); // Gérer l'exception si la borne n'est pas trouvée
+        }
+    }
 
 
 

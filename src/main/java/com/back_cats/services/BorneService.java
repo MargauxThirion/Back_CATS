@@ -282,4 +282,19 @@ public class BorneService {
         return statusMap;
     }
 
+    public Borne setBorneStatusToHS(String borneId) {
+        ObjectId id = new ObjectId(borneId);
+        Borne borne = borneRepository.findById(id).orElseThrow(() -> new RuntimeException("Borne not found"));
+        borne.setStatus("HS");
+        return borneRepository.save(borne);
+    }
+
+    public Borne setBorneStatusToFonctionnelle(String borneId) {
+        ObjectId id = new ObjectId(borneId);
+        Borne borne = borneRepository.findById(id).orElseThrow(() -> new RuntimeException("Borne not found"));
+        borne.setStatus("Fonctionnelle");
+        return borneRepository.save(borne);
+    }
+
+
 }
