@@ -7,6 +7,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.List;
+
 @RestController
 @RequestMapping("/signalement")
 public class SignalementController {
@@ -52,4 +54,25 @@ public class SignalementController {
         return ResponseEntity.ok("Signalement supprimé avec succès.");
     }
 
+    @PutMapping("/{signalementId}/close")
+    public ResponseEntity<Signalement> closeSignalement(@PathVariable String signalementId) {
+        try {
+            Signalement updatedSignalement = signalementService.closeSignalement(signalementId);
+            return ResponseEntity.ok(updatedSignalement);
+        } catch (Exception e) {
+            return ResponseEntity.badRequest().body(null);
+        }
+    }
+
+    @GetMapping("/en-attente")
+    public ResponseEntity<List<Signalement>> getSignalementsEnAttente() {
+        List<Signalement> signalements = signalementService.getSignalementsByEtat("En attente");
+        return ResponseEntity.ok(signalements);
+    }
+
+    @GetMapping("/ferme")
+    public ResponseEntity<List<Signalement>> getSignalementsFermes() {
+        List<Signalement> signalements = signalementService.getSignalementsByEtat("Fermé");
+        return ResponseEntity.ok(signalements);
+    }
 }

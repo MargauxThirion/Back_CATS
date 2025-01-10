@@ -10,6 +10,7 @@ import org.bson.types.ObjectId;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import java.util.Date;
+import java.util.List;
 
 @Service
 public class SignalementService {
@@ -99,6 +100,17 @@ public class SignalementService {
 
     public void deleteSignalement(ObjectId id) {
         signalementRepository.deleteById(id);
+    }
+
+    public Signalement closeSignalement(String signalementId) {
+        ObjectId id = new ObjectId(signalementId);
+        Signalement signalement = signalementRepository.findById(id).orElseThrow(() -> new RuntimeException("Signalement not found"));
+        signalement.setEtat("Fermé");
+        return signalementRepository.save(signalement);
+    }
+
+    public List<Signalement> getSignalementsByEtat(String etat) {
+        return signalementRepository.findByEtat(etat);
     }
 }
 
