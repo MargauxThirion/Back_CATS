@@ -47,6 +47,7 @@ public class BorneService {
                     .orElseThrow(() -> new TypeBorneException("TypeBorne not found: " + borne.getTypeBorne().getId()));
             borne.setTypeBorne(typeBorne);
         }
+
         if (borne.getCarte() == null || borne.getCarte().getId() == null) {
             throw new CarteException("Carte must be provided and not null");
         }
@@ -56,11 +57,24 @@ public class BorneService {
                 .orElseThrow(() -> new CarteException("Carte not found: " + borne.getCarte().getId()));
         borne.setCarte(carte);
 
-        if (borne.getNumero() == null) {
+        // Vérifiez si le numéro est déjà utilisé
+        if (borne.getNumero() != null) {
+            List<Borne> existingBornes = borneRepository.findByNumeroAndCarteId(borne.getNumero(), carteId);
+            if (!existingBornes.isEmpty()) {
+                throw new NumeroAlreadyUsedException("Le numéro " + borne.getNumero() + " est déjà utilisé pour une autre borne sur cette carte.");
+            }
+        } else {
             borne.setNumero(findAvailableNumero(carteId));
         }
+
         return borneRepository.save(borne);
     }
+    public class NumeroAlreadyUsedException extends RuntimeException {
+        public NumeroAlreadyUsedException(String message) {
+            super(message);
+        }
+    }
+
 
     public Integer findAvailableNumero(ObjectId carteId) {
         List<Borne> bornes = borneRepository.findByCarteId(carteId);

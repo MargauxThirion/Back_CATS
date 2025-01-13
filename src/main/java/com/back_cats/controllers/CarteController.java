@@ -1,5 +1,6 @@
 package com.back_cats.controllers;
 
+import com.back_cats.exceptions.CarteException;
 import com.back_cats.models.Carte;
 import com.back_cats.services.CarteService;
 import com.mongodb.client.gridfs.model.GridFSFile;
@@ -12,6 +13,7 @@ import org.springframework.data.mongodb.core.query.Criteria;
 import org.springframework.data.mongodb.core.query.Query;
 import org.springframework.data.mongodb.gridfs.GridFsResource;
 import org.springframework.data.mongodb.gridfs.GridFsTemplate;
+import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
@@ -21,6 +23,7 @@ import org.springframework.web.multipart.MultipartFile;
 import java.io.IOException;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.time.LocalDateTime;
 import java.util.List;
 
 @RestController
@@ -96,7 +99,6 @@ public class CarteController {
                 return ResponseEntity.notFound().build();
             }
 
-            // Récupérer le fichier depuis GridFS
             GridFSFile gridFSFile = gridFsTemplate.findOne(new Query(Criteria.where("_id").is(new ObjectId(carte.getCarte()))));
             if (gridFSFile == null) {
                 return ResponseEntity.notFound().build();
@@ -111,5 +113,14 @@ public class CarteController {
         }
     }
 
+    @GetMapping("{id}/")
+    public ResponseEntity<LocalDateTime> getLastModifiedById(@PathVariable String id) {
+        try {
+            Carte carte = carteService.getCarteById(new ObjectId(id));
+            return ResponseEntity.ok(carte.getLastModified());
+        } catch (CarteException e) {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(null);
+        }
+    }
 
 }

@@ -15,6 +15,7 @@ import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
@@ -43,6 +44,7 @@ public class CarteService {
             // Sauvegarder l'ID du fichier dans la base de données Carte
             Carte carte = carteOpt.get();
             carte.setCarte(fileId.toHexString());
+            carte.setLastModified(LocalDateTime.now());
             carteRepository.save(carte);
         } else {
             throw new IllegalArgumentException("Carte not found or file is empty");
@@ -76,5 +78,12 @@ public class CarteService {
     public Carte getNom(String nom) {
         return carteRepository.findByNom(nom);
     }
+
+    public boolean isCarteModified(ObjectId id, LocalDateTime clientLastModified) {
+        Carte carte = carteRepository.findById(id)
+                .orElseThrow(() -> new CarteException("Carte not found with id: " + id));
+        return carte.getLastModified().isAfter(clientLastModified);
+    }
+
 
 }

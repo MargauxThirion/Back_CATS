@@ -12,4 +12,5 @@ import java.util.Optional;
 public interface BorneRepository extends MongoRepository<Borne, ObjectId> {
     List<Borne> findByStatus(String status);
     List<Borne> findByCarteId(ObjectId carteId);
+    List<Borne> findByNumeroAndCarteId(Integer numero, ObjectId carteId);
 }

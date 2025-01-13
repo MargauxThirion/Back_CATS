@@ -7,6 +7,7 @@ import org.springframework.data.mongodb.core.mapping.DBRef;
 import org.springframework.data.mongodb.core.mapping.Document;
 import org.springframework.data.mongodb.core.mapping.Field;
 
+import java.time.LocalDateTime;
 import java.util.List;
 
 @Document(collection = "carte")
@@ -16,7 +17,7 @@ public class Carte {
     private ObjectId id;
     private String carte; // Chemin vers la photo jpeg
     private String nom;
-
+    private LocalDateTime lastModified;
 
     public String getId() {
         return id.toHexString();
@@ -42,4 +43,11 @@ public class Carte {
         this.nom = nom;
     }
 
+    public LocalDateTime getLastModified() {
+        return lastModified;
+    }
+
+    public void setLastModified(LocalDateTime lastModified) {
+        this.lastModified = lastModified;
+    }
 }

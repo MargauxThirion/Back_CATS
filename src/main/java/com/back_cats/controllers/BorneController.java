@@ -37,9 +37,18 @@ public class BorneController {
     }
 
     @PostMapping
-    public ResponseEntity<Borne> createBorne(@RequestBody Borne borne) {
-        Borne newBorne = borneService.saveBorne(borne);
-        return ResponseEntity.ok(newBorne);
+    public ResponseEntity<?> createBorne(@RequestBody Borne borne) {
+        try {
+            Borne newBorne = borneService.saveBorne(borne);
+            return ResponseEntity.ok(newBorne);
+        } catch (BorneService.NumeroAlreadyUsedException e) {
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(e.getMessage());
+        }
+    }
+    @ExceptionHandler(BorneService.NumeroAlreadyUsedException.class)
+    @ResponseStatus(HttpStatus.BAD_REQUEST)
+    public String handleNumeroAlreadyUsedException(BorneService.NumeroAlreadyUsedException e) {
+        return e.getMessage();
     }
 
 
