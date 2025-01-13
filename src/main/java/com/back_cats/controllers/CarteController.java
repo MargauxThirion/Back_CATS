@@ -113,7 +113,7 @@ public class CarteController {
         }
     }
 
-    @GetMapping("{id}/")
+    @GetMapping("{id}/lastModified")
     public ResponseEntity<LocalDateTime> getLastModifiedById(@PathVariable String id) {
         try {
             Carte carte = carteService.getCarteById(new ObjectId(id));
