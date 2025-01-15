@@ -90,10 +90,16 @@ public class BorneController {
     }
     @GetMapping("/etat")
     public ResponseEntity<Map<String, List<Borne>>> getBornesStatus() {
-        Date instant = new Date(); // Utilise la date et l'heure actuelles
         Map<String, List<Borne>> statusMap = borneService.getBornesStatus();
         return ResponseEntity.ok(statusMap);
     }
+
+    @GetMapping("/etat/{carteId}")
+    public ResponseEntity<Map<String, List<Borne>>> getBornesStatusAndCarte(@PathVariable String carteId) {
+        Map<String, List<Borne>> statusMap = borneService.getBornesStatusAndCarte(carteId);
+        return ResponseEntity.ok(statusMap);
+    }
+
     @GetMapping("/etat-velo")
     public ResponseEntity<Map<String, List<Borne>>> getBornesVeloStatus() {
         Date instant = new Date(); // Utilise la date et l'heure actuelles
