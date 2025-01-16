@@ -20,7 +20,5 @@ public interface ReservationRepository extends MongoRepository<Reservation, Obje
 
     List<Reservation> findByUserId(ObjectId userId);
 
-
-
-
+    void deleteByBorneId(ObjectId borneId);
 }

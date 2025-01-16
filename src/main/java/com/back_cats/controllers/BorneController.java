@@ -78,16 +78,6 @@ public class BorneController {
                 }).orElseGet(() -> ResponseEntity.notFound().build());
     }
 
-
-    @DeleteMapping("/{id}")
-    public ResponseEntity<String> deleteBorne(@PathVariable String id) {
-        Optional<Borne> borne = borneService.getBorneById(new ObjectId(id));
-        if (borne.isPresent()) {
-            borneService.deleteBorne(new ObjectId(id));
-            return ResponseEntity.ok("Borne supprimée avec succès.");
-        }
-        return ResponseEntity.notFound().build();
-    }
     @GetMapping("/etat")
     public ResponseEntity<Map<String, List<Borne>>> getBornesStatus() {
         Map<String, List<Borne>> statusMap = borneService.getBornesStatus();
@@ -174,8 +164,15 @@ public class BorneController {
         }
     }
 
-
-
-
+    @DeleteMapping("/{id}")
+    public ResponseEntity<String> deleteBorne(@PathVariable String id) {
+        ObjectId borneId = new ObjectId(id);
+        Optional<Borne> borne = borneService.getBorneById(borneId);
+        if (borne.isPresent()) {
+            borneService.deleteBorneAndReservations(borneId);
+            return ResponseEntity.ok("Borne et réservations associées supprimées avec succès.");
+        }
+        return ResponseEntity.notFound().build();
+    }
 
 }

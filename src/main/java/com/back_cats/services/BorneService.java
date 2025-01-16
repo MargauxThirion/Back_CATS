@@ -389,8 +389,11 @@ public class BorneService {
         borne.setStatus("Fonctionnelle");
         return borneRepository.save(borne);
     }
+    public void deleteBorneAndReservations(ObjectId borneId) {
+        // Supprime toutes les réservations associées à cette borne
+        reservationRepository.deleteByBorneId(borneId);
 
-
-
-
+        // Ensuite, supprime la borne
+        borneRepository.deleteById(borneId);
+    }
 }
