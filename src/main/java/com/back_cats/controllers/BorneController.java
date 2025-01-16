@@ -119,6 +119,20 @@ public class BorneController {
         }
     }
 
+    @GetMapping("/carte/{carteId}/etat-date")
+    public ResponseEntity<Map<String, List<Borne>>> getBornesStatusByCarte(
+            @PathVariable String carteId,
+            @RequestParam @DateTimeFormat(pattern="yyyy-MM-dd'T'HH:mm:ss") Date start,
+            @RequestParam @DateTimeFormat(pattern="yyyy-MM-dd'T'HH:mm:ss") Date end) {
+        try {
+            Map<String, List<Borne>> statusMap = borneService.getBornesStatusByDateAndCarte(carteId, start, end);
+            return ResponseEntity.ok(statusMap);
+        } catch (ParseException e) {
+            return ResponseEntity.badRequest().body(null); // Handle parse exceptions here
+        }
+    }
+
+
     @GetMapping("/etat-velo-date")
     public ResponseEntity<Map<String, List<Borne>>> getBorneVelosStatus(
             @RequestParam @DateTimeFormat(pattern="yyyy-MM-dd'T'HH:mm:ss") Date start,

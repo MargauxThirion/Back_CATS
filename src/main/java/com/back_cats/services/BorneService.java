@@ -299,6 +299,44 @@ public class BorneService {
         statusMap.remove("fonctionnelle");
         return statusMap;
     }
+    public Map<String, List<Borne>> getBornesStatusByDateAndCarte(String carteId, Date start, Date end) throws ParseException {
+        ObjectId carteIdObj = new ObjectId(carteId);
+        List<Borne> allBornes = borneRepository.findByCarteId(carteIdObj);
+        List<Reservation> activeReservations = reservationService.getActiveReservationsForDate(start, end);
+        Set<String> occupiedIds = new HashSet<>();
+        for (Reservation reservation : activeReservations) {
+            occupiedIds.add(reservation.getBorne().getId());
+        }
+
+        Map<String, List<Borne>> statusMap = new HashMap<>();
+        statusMap.put("disponible", new ArrayList<>());
+        statusMap.put("occupee", new ArrayList<>());
+        statusMap.put("hs", new ArrayList<>());
+        statusMap.put("signalee", new ArrayList<>());
+
+        for (Borne borne : allBornes) {
+            if (borne.getTypeBorne() != null && "voiture".equals(borne.getTypeBorne().getNom())) {
+                String statusKey = normalizeKey(borne.getStatus());
+                if (!statusMap.containsKey(statusKey)) {
+                    statusMap.put(statusKey, new ArrayList<>());
+                }
+
+                if (statusKey.equals("hs")) {
+                    statusMap.get(statusKey).add(borne);
+                } else if (statusKey.equals("signalee")) {
+                    statusMap.get(statusKey).add(borne);
+                } else if (statusKey.equals("fonctionnelle")) {
+                    if (occupiedIds.contains(borne.getId())) {
+                        statusMap.get("occupee").add(borne);
+                    } else {
+                        statusMap.get("disponible").add(borne);
+                    }
+                }
+            }
+        }
+        statusMap.remove("fonctionnelle");
+        return statusMap;
+    }
 
     public Map<String, List<Borne>> getBornesVeloStatusByDate(Date start, Date end) throws ParseException {
         List<Borne> allBornes = borneRepository.findAll();

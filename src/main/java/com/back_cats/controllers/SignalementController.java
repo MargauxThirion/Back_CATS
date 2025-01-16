@@ -70,9 +70,18 @@ public class SignalementController {
         return ResponseEntity.ok(signalements);
     }
 
+    @GetMapping("/carte/{carteId}/en-attente")
+    public ResponseEntity<List<Signalement>> getSignalementsEnAttenteByCarte(@PathVariable ObjectId carteId) {
+        List<Signalement> signalements = signalementService.getSignalementsByEtatAndCarteId("En attente", carteId);
+        return ResponseEntity.ok(signalements);
+    }
+
+
     @GetMapping("/ferme")
     public ResponseEntity<List<Signalement>> getSignalementsFermes() {
         List<Signalement> signalements = signalementService.getSignalementsByEtat("Fermé");
         return ResponseEntity.ok(signalements);
     }
+
+
 }

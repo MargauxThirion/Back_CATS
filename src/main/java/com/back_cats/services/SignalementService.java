@@ -1,9 +1,11 @@
 package com.back_cats.services;
 
 import com.back_cats.models.Borne;
+import com.back_cats.models.Carte;
 import com.back_cats.models.Signalement;
 import com.back_cats.models.User;
 import com.back_cats.repositories.BorneRepository;
+import com.back_cats.repositories.CarteRepository;
 import com.back_cats.repositories.SignalementRepository;
 import com.back_cats.repositories.UserRepository;
 import org.bson.types.ObjectId;
@@ -11,6 +13,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import java.util.Date;
 import java.util.List;
+import java.util.stream.Collectors;
 
 @Service
 public class SignalementService {
@@ -20,6 +23,9 @@ public class SignalementService {
 
     @Autowired
     private BorneRepository borneRepository;
+
+    @Autowired
+    private CarteRepository carteRepository;
 
     @Autowired
     private UserRepository userRepository;
@@ -112,5 +118,22 @@ public class SignalementService {
     public List<Signalement> getSignalementsByEtat(String etat) {
         return signalementRepository.findByEtat(etat);
     }
+
+    public List<Signalement> getSignalementsByEtatAndCarteId(String etat, ObjectId carteId) {
+
+        List<Borne> bornes = borneRepository.findByCarteId(carteId);
+
+        List<ObjectId> borneIds = bornes.stream()
+                .map(Borne::getId)  // Récupère les IDs comme String
+                .map(ObjectId::new) // Convertit les Strings en ObjectId
+                .collect(Collectors.toList());
+
+        List<Signalement> signalements = signalementRepository.findByIdborneIn(borneIds);
+        return signalements.stream()
+                .filter(signalement -> signalement.getEtat().equals(etat))
+                .collect(Collectors.toList());
+    }
+
+
 }
 
