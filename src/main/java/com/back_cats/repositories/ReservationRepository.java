@@ -18,6 +18,10 @@ public interface ReservationRepository extends MongoRepository<Reservation, Obje
     @Query("{ 'borne': ?0, $or: [ { 'dateDebut': { $lt: ?2 }, 'dateFin': { $gt: ?1 } }, { 'dateDebut': { $lte: ?1 }, 'dateFin': { $gte: ?2 } } ] }")
     List<Reservation> findOverlappingReservations(ObjectId borneId, Date startDate, Date endDate);
 
+    @Query("{ 'userId': ?0, '$or': [ { 'dateDebut': { $lte: ?2 }, 'dateFin': { $gte: ?1 } }, { 'dateDebut': { $lte: ?1 }, 'dateFin': { $gte: ?1 } }, { 'dateDebut': { $lte: ?2 }, 'dateFin': { $gte: ?2 } } ] }")
+    List<Reservation> findUserOverlappingReservations(ObjectId userId, Date startDate, Date endDate);
+
+
     List<Reservation> findByUserId(ObjectId userId);
 
     void deleteByBorneId(ObjectId borneId);

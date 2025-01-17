@@ -1,5 +1,6 @@
 package com.back_cats.services;
 
+import com.back_cats.exceptions.ReservationException;
 import com.back_cats.models.Borne;
 import com.back_cats.models.Reservation;
 import com.back_cats.models.User;
@@ -24,29 +25,30 @@ public class ReservationService {
     @Autowired
     private UserRepository userRepository;
 
-    public Reservation saveReservation(Reservation reservation) throws Exception {
-        if (reservation.getBorne() != null && reservation.getBorne().getId() != null) {
-            ObjectId borneId = new ObjectId(reservation.getBorne().getId());
-            List<Reservation> overlappingReservations = reservationRepository.findOverlappingReservations(borneId, reservation.getDateDebut(), reservation.getDateFin());
+    public Reservation saveReservation(Reservation reservation) throws ReservationException {
+        ObjectId userId = new ObjectId(reservation.getUser().getId());
+        ObjectId borneId = new ObjectId(reservation.getBorne().getId());
 
-            if (!overlappingReservations.isEmpty()) {
-                throw new Exception("This time slot is already booked for this borne.");
-            }
-
-            Borne borne = borneRepository.findById(borneId).orElseThrow(() -> new RuntimeException("Borne not found"));
-            reservation.setBorne(borne);
+        // Vérification des réservations chevauchantes pour la borne
+        List<Reservation> overlappingReservations = reservationRepository.findOverlappingReservations(borneId, reservation.getDateDebut(), reservation.getDateFin());
+        if (!overlappingReservations.isEmpty()) {
+            throw new ReservationException("Cette horaire est déjà réservé pour cette borne.");
         }
 
-        if (reservation.getUser() != null && reservation.getUser().getId() != null) {
-            ObjectId userId = new ObjectId(reservation.getUser().getId());
-            User user = userRepository.findById(userId).orElseThrow(() -> new RuntimeException("User not found"));
-            reservation.setUser(user);
+        // Vérification des réservations chevauchantes pour l'utilisateur
+        overlappingReservations = reservationRepository.findUserOverlappingReservations(userId, reservation.getDateDebut(), reservation.getDateFin());
+        if (!overlappingReservations.isEmpty()) {
+            throw new ReservationException("L'utilisateur a déjà une réservation pour cette horaire.");
         }
+
+        // Récupération et validation de la borne et de l'utilisateur
+        Borne borne = borneRepository.findById(borneId).orElseThrow(() -> new RuntimeException("Borne not found"));
+        User user = userRepository.findById(userId).orElseThrow(() -> new RuntimeException("User not found"));
+        reservation.setBorne(borne);
+        reservation.setUser(user);
 
         return reservationRepository.save(reservation);
     }
-
-
 
     public List<Reservation> getAllReservations() {
         return reservationRepository.findAll();
